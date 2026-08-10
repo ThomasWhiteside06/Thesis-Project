@@ -4,7 +4,6 @@ body {
 
 :root {
   --secondary: rgb(33, 153, 0);
-  --hover-secondary: rgb(84, 145, 68);
   --tertiary: rgb(133, 195, 117);
 /*Light Mode*/
   --nav-bar: white;
@@ -17,5 +16,4 @@ body {
   --nav-bar: rgb(28, 28, 28);
   --primary: rgb(54, 54, 54);
   --text: white;
-  --border: rgb(18, 18, 18);
 }

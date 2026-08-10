@@ -4,9 +4,8 @@ import { Injectable } from '@angular/core';
   providedIn: 'root'
 })
 export class ThemeService {
-  private darkMode = false;
+  darkMode = localStorage.getItem('darkMode') === 'true';
   constructor() {
-    this.darkMode = localStorage.getItem('darkMode') === 'true';
     this.applyTheme();
   }
 

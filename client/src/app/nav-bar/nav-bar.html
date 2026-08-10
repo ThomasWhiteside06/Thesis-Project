@@ -1,9 +1,9 @@
 <div id = 'nav-bar-container'>
-    <h1 id = 'title'>BeginnerBudget</h1>
+    <h1 id = 'title' routerLink = '/'>BeginnerBudget</h1>
     <div id = 'link_container'>
-        <h2 id = 'budget-link' class = 'page-link'>Budget</h2>
-        <h2 id = 'transactions-link' class = 'page-link'>Transactions</h2>
-        <h2 id = 'accounts-link' class = 'page-link'>Accounts</h2>
-        <h2 id = 'settings-link' class = 'page-link' (click)="toggleTheme()">⚙</h2>
+        <h2 id = 'budget-link' class = 'page-link' routerLink = '/budget'>Budget</h2>
+        <h2 id = 'transactions-link' class = 'page-link' routerLink = '/transactions'>Transactions</h2>
+        <h2 id = 'accounts-link' class = 'page-link' routerLink = '/accounts'>Accounts</h2>
+        <h2 id = 'settings-link' class = 'page-link' routerLink = '/settings'>⚙</h2>
     </div>
 </div>
