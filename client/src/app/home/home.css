@@ -1,0 +1,11 @@
+#home-container {
+    margin-top: 0;
+    background-color: var(--primary);
+    height: 1000px;
+    color: var(--text);
+    padding-top: 10px;
+}
+
+p {
+    margin: 0;
+}
