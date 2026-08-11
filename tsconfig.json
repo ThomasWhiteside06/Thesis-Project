@@ -5,13 +5,14 @@
     "moduleResolution": "Node",
 
     "rootDir": "./",
-    "outDir": "../dist",
+    "outDir": "./dist",
 
     "types": ["node"],
 
-    "strict": true,
+    "esModuleInterop": true,
     "skipLibCheck": true,
+    "strict": true,
     "sourceMap": true
-  }
+  },
+  "include": ["./**/*.ts"]
 }
-

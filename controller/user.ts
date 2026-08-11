@@ -67,10 +67,10 @@ async function getUserById(req: Request, res: Response) {
     res.status(500).json({ error: "Failed to fetch user" });
   }
 }
-module.exports = {
+export {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser
-}
+};

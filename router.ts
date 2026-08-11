@@ -1,23 +1,22 @@
-const router = require('express').Router()
-import { Request, Response } from 'express'
-const {
+import { Router, Request, Response } from "express";
+import {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser
-} = require('./controller/user');
+} from "./controller/user";
 
+const router = Router();
 
-router.get('/', (req:Request, res:Response) => {
-  res.json({message:'user router active'})
-})
+router.get("/", (req: Request, res: Response) => {
+  res.json({ message: "user router active" });
+});
 
-router.get('/users', getUsers)
-router.get('/users/:id', getUserById)
-router.post('/users', createUser)
-router.put('/users/:id', updateUser)
-router.delete('/users/:id', deleteUser)
-console.log("ROUTER LOADED");
+router.get("/users", (req: Request, res: Response) => getUsers(req, res));
+router.get("/users/:id", (req: Request, res: Response) => getUserById(req, res));
+router.post("/users", (req: Request, res: Response) => createUser(req, res));
+router.put("/users/:id", (req: Request, res: Response) => updateUser(req, res));
+router.delete("/users/:id", (req: Request, res: Response) => deleteUser(req, res));
 
-module.exports = router;
+export default router;
