@@ -1,12 +1,47 @@
 #home-container {
     margin-top: 0;
     background-color: var(--primary);
-    height: 1000px;
+    height: 814px;
     color: var(--text);
-    padding-top: 20px;
     padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 20px;
+    display: flex;
+}
+
+.container {
+    border: 1px solid red;
+    height: 812px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+.subcontainer {
+    border: 1px solid blue;
+}
+
+#budget-overview-container {
+    width: 40%;
+}
+
+#graph-container {
+    height: 400px;
+}
+
+#graph-info-container {
+    height: 300px;
+    margin-top: 20px;
+}
+
+#transaction-overview-container {
+    width: 60%;
 }
 
 p {
     margin: 0;
+}
+
+.WIP {
+    color: red;
+    text-align: center;
 }
