@@ -16,7 +16,13 @@ import {
 } from "./controller/account";
 
 
-
+import {
+  getTransactions,
+  getTransactionById,
+  createTransaction,
+  updateTransaction,
+  deleteTransaction
+} from "./controller/transaction";
 
 const router = Router();
 
@@ -35,5 +41,13 @@ router.get("/accounts/:id", (req: Request, res: Response) => getAccountById(req,
 router.post("/accounts", (req: Request, res: Response) => createAccount(req, res));
 router.put("/accounts/:id", (req: Request, res: Response) => updateAccount(req, res));
 router.delete("/accounts/:id", (req: Request, res: Response) => deleteAccount(req, res));
+
+
+
+router.get('/transactions', getTransactions)
+router.get('/transactions/:id', getTransactionById)
+router.post('/transactions', createTransaction)
+router.put('/transactions/:id', updateTransaction)
+router.delete('/transactions/:id', deleteTransaction)
 
 export default router;
