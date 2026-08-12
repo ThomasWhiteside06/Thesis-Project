@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+
+    "rootDir": "./",
+    "outDir": "./dist",
+
+    "types": ["node"],
+
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "strict": false,
+    "sourceMap": true
+  },
+ "include": ["./**/*.ts", "prisma", "scripts/MOCK"]
+ 
+}
