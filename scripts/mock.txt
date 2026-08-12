@@ -1,0 +1,105 @@
+import "dotenv/config";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { PrismaClient } from "@prisma/client";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+async function main() {
+  console.log("DATABASE_URL:", process.env.DATABASE_URL);
+
+  const users = await prisma.user.findMany();
+  if (users.length < 2) throw new Error("Need at least 2 users");
+
+  const user0 = users[0];
+  const user1 = users[1];
+
+  const codeworks = await prisma.user.create({
+    data: {
+      email: "codeworks@school.com",
+      password: "password",
+      firstName: "Codeworks",
+      lastname: "Academy",
+      currency: "USD",
+    },
+  });
+
+  await prisma.account.create({
+    data: {
+      userId: user0.id,
+      accountType: "checking",
+      accountName: "Spending",
+      balance: 123.0,
+    },
+  });
+
+  await prisma.account.create({
+    data: {
+      userId: user1.id,
+      accountType: "savings",
+      accountName: "Savings",
+      balance: 10000.0,
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      categories: ["groceries"],
+      senderId: user0.id,
+      recipientId: user1.id,
+      amount: 100.0,
+      date: new Date("2026-08-08"),
+      regular: true,
+      frequency: "weekly",
+      start: new Date("2026-08-08"),
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      categories: ["savings"],
+      senderId: user1.id,
+      recipientId: user0.id,
+      amount: 150.0,
+      date: new Date("2026-08-09"),
+      regular: false,
+      frequency: "once",
+      start: new Date("2026-08-09"),
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      categories: ["paying back"],
+      senderId: user0.id,
+      recipientId: codeworks.id,
+      amount: 30.0,
+      date: new Date("2026-08-10"),
+      regular: false,
+      frequency: "once",
+      start: new Date("2026-08-10"),
+    },
+  });
+
+  await prisma.transaction.create({
+    data: {
+      categories: ["tuition fees"],
+      senderId: codeworks.id,
+      recipientId: user1.id,
+      amount: 1000.0,
+      date: new Date("2026-06-20"),
+      regular: false,
+      frequency: "once",
+      start: new Date("2026-06-20"),
+    },
+  });
+
+  console.log("Mock data inserted successfully!");
+}
+
+main()
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());

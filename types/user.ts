@@ -1,9 +1,18 @@
+import { Transaction } from './transcation'
+import { Account } from './account'
+
+
 export interface User {
   id: string,
   email: string,
   password: string,
-  firstname: string,
+  firstName: string,
   lastname: string,
-  createdAt:Date,
+  createdAt: Date,
+
+  currency?:string,
+  accounts?: Account[],
+  sent?: Transaction[],
+  received?: Transaction[]
   
 }

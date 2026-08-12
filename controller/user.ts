@@ -1,76 +1,87 @@
 
 import { Request, Response } from 'express'
 import { User } from '../types/user'
-const { prisma } = require('../prisma/client')
+import { prisma } from '../prisma/client'
 
-
-async function getUsers(req:Request, res:Response) {
+async function getUsers(req: Request, res: Response) {
   try {
     const users: User[] = await prisma.user.findMany()
-    res.json(users);
+    res.json(users)
   } catch (err) {
-    console.error("getUsers error:", err);
-    res.status(500).json({ error: "Failed to fetch users" });
+    console.error("getUsers error:", err)
+    res.status(500).json({ error: "Failed to fetch users" })
   }
 }
 
 async function createUser(req: Request, res: Response) {
   try {
-    const { email, password, firstname, lastname } = req.body
+    const { email, password, firstName, lastname } = req.body
+
     const user: User = await prisma.user.create({
-      data:{email, password, firstname, lastname}
+      data: { email, password, firstName, lastname }
     })
+
     res.json(user)
   } catch (err) {
-    console.error('error creating user', err)
-    res.status(500).json({error:'failed to create user'})
+    console.error("error creating user", err)
+    res.status(500).json({ error: "failed to create user" })
   }
 }
 
 async function updateUser(req: Request, res: Response) {
   try {
-    const { email, password, firstname, lastname } = req.body
+    const { email, password, firstName, lastname } = req.body
+
     const user: User = await prisma.user.update({
-      data:{email, password,firstname,lastname}
+      where: { id: req.params.id as string },
+      data: { email, password, firstName, lastname }
     })
+
     res.json(user)
-  } catch (err: any) {
-    console.error('updating user error', err)
-    if (err.code === 'P2025') {
-      return res.status(404).json({error:'User not fuond'})
+  } catch (err) {
+    console.error("updating user error:", err)
+
+    // Prisma P2025 = record not found
+    if (typeof err === "object" && err !== null && "code" in err && (err as { code: string }).code === "P2025") {
+      return res.status(404).json({ error: "User not found" })
     }
-    res.status(500).json({error:'failed to update user'})
+
+    res.status(500).json({ error: "failed to update user" })
   }
 }
 
 async function deleteUser(req: Request, res: Response) {
   try {
     await prisma.user.delete({
-      where:{id: req.params.id}
+      where: { id: req.params.id as string }
     })
-    res.json({message:'User deleted'})
-  } catch (err: any) {
-    console.error('delete user failed')
+
+    res.json({ message: "User deleted" })
+  } catch (err) {
+    console.error("delete user failed:", err)
+    res.status(500).json({ error: "failed to delete user" })
   }
 }
+
 async function getUserById(req: Request, res: Response) {
   try {
     const user: User | null = await prisma.user.findUnique({
-      where: { id: req.params.id }
-    });
+      where: { id: req.params.id as string }
+    })
 
-    if (!user) return res.status(404).json({ error: "User not found" });
+    if (!user) return res.status(404).json({ error: "User not found" })
 
-    res.json(user);
+    res.json(user)
   } catch (err) {
-    console.error("getUserById error:", err);
-    res.status(500).json({ error: "Failed to fetch user" });
+    console.error("getUserById error:", err)
+    res.status(500).json({ error: "Failed to fetch user" })
   }
 }
+
 export {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser
-};
+}
