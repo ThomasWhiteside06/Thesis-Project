@@ -1,4 +1,4 @@
-import { Decimal } from "../generated/prisma/client";
+import { Decimal } from "@prisma/client";
 
 export interface Account {
   id: string;
@@ -7,3 +7,6 @@ export interface Account {
   accountName: string;
   balance: Decimal;
 }
+
+
+
