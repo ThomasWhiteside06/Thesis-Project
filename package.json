@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "ts-node server.ts",
+    "prebuild": "prisma generate",
     "build": "tsc",
     "start": "node dist/server/server.js"
   },
