@@ -3,9 +3,9 @@ export interface Transaction {
   categories: string[];
   senderId: string;
   recipientId: string;
-  amount: string;
-  date: string;
+  amount: number;    
+  date: Date;
   regular: boolean;
   frequency: string;
-  start: string; 
+  start: Date;
 }

@@ -15,10 +15,10 @@ async function getUsers(req: Request, res: Response) {
 
 async function createUser(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastname } = req.body
+    const { email, password, firstName, lastname,currency } = req.body
 
     const user: User = await prisma.user.create({
-      data: { email, password, firstName, lastname }
+      data: { email, password, firstName, lastname,currency }
     })
 
     res.json(user)
@@ -30,18 +30,18 @@ async function createUser(req: Request, res: Response) {
 
 async function updateUser(req: Request, res: Response) {
   try {
-    const { email, password, firstName, lastname } = req.body
+    const { email, password, firstName, lastname,currency } = req.body
 
     const user: User = await prisma.user.update({
       where: { id: req.params.id as string },
-      data: { email, password, firstName, lastname }
+      data: { email, password, firstName, lastname , currency}
     })
 
     res.json(user)
   } catch (err) {
     console.error("updating user error:", err)
 
-    // Prisma P2025 = record not found
+    
     if (typeof err === "object" && err !== null && "code" in err && (err as { code: string }).code === "P2025") {
       return res.status(404).json({ error: "User not found" })
     }
