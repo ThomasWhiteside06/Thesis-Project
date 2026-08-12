@@ -20,6 +20,12 @@
     border: 1px solid blue;
 }
 
+.subsubcontainer {
+    border: 1px solid green;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
 #budget-overview-container {
     width: 40%;
 }
@@ -33,8 +39,54 @@
     margin-top: 20px;
 }
 
-#transaction-overview-container {
+#accounts-overview-container {
     width: 60%;
+}
+
+#accounts-title-container {
+    padding-top: 20px;
+    display: flex;
+}
+
+#accounts-title {
+    translate: 0 -20px;
+}
+
+select {
+    background-color: var(--secondary);
+    height: 75px;
+    width: fit-content;
+    border-radius: 30px;
+    border: none;
+    color: var(--text);
+    font-weight: bold;
+    font-size: 1.5rem;
+    padding: 0 25px;
+    cursor: pointer;
+}
+
+#account-selector {
+    translate: 150px;
+}
+
+#transactions-container {
+    height: 702px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+#right-col-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+#all-transactions-container {
+    flex: 0 0 75%;
+}
+
+#upcoming-transactions-container {
+    flex: 0 0 24.5%;
 }
 
 p {

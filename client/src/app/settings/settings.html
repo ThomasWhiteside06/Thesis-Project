@@ -17,7 +17,7 @@
         </div>
         <div class = 'setting-container'>
             <h2 class = 'subtitle'>Update Details:</h2>
-            <form #form = 'ngForm' (ngSubmit) = 'submitForm(form)'>
+            <form #form = 'ngForm' (ngSubmit) = 'submitForm()'>
                 <div class = 'form-group'>
                     <label for = 'email'>Email:</label>
                     <input type = 'email' name = 'email' [(ngModel)] = 'email' required>
@@ -37,5 +37,29 @@
                 <button type = 'submit'>Submit</button>
             </form>
         </div>
+        <!-- Add a user - will be moved -->
+        <div class = 'setting-container' id = 'temp-create-container'>
+            <h2 class = 'subtitle'>Create User:</h2>
+            <form (ngSubmit) = 'addUser()'>
+                <div class = 'form-group'>
+                    <label for = 'email'>Email:</label>
+                    <input type = 'email' name = 'newEmail' [(ngModel)] = 'newEmail' required>
+                </div>
+                <div class = 'form-group'>
+                    <label for = 'password'>Password:</label>
+                    <input type = 'password' name = 'newPassword' [(ngModel)] = 'newPassword' required>
+                </div>
+                <div class = 'form-group'>
+                    <label for = 'forename'>Forename:</label>
+                    <input type = 'forename' name = 'newForename' [(ngModel)] = 'newForename' required>
+                </div>
+                <div class = 'form-group'>
+                    <label for = 'surname'>Surname:</label>
+                    <input type = 'surname' name = 'newSurname' [(ngModel)] = 'newSurname' required>
+                </div>
+                <button type = 'submit'>Submit</button>
+            </form>
+        </div>
+        <!-- End of add a user -->
     </div>
 </div>
