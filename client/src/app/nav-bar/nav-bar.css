@@ -1,0 +1,30 @@
+#nav-bar-container {
+    height: 100px;
+    box-shadow: 0 10px 20px var(--border);
+    background-color: var(--nav-bar);
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 40px;
+}
+
+#nav-bar-container h1,h2 {
+    -webkit-text-stroke: 1px var(--secondary);
+    color: var(--tertiary);
+    font-size: 3rem;
+}
+
+#nav-bar-container h1:hover, h2:hover {
+    color: var(--secondary);
+}
+
+#link_container {
+    display: flex;
+    margin-left: auto;
+    gap: 50px;
+    margin-right: 40px;
+}
+
+p {
+    margin: 0;
+}

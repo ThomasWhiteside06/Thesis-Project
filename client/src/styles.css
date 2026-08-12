@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+body {
+    margin: 0;
+}
+
+:root {
+  --secondary: rgb(33, 153, 0);
+  --tertiary: rgb(133, 195, 117);
+/*Light Mode*/
+  --nav-bar: white;
+  --primary: white;
+  --text: black;
+  --border: rgb(134, 131, 131);
+}
+
+.dark-mode {
+  --nav-bar: rgb(28, 28, 28);
+  --primary: rgb(54, 54, 54);
+  --text: white;
+}
