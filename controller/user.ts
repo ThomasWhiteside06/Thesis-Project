@@ -1,7 +1,7 @@
 
 import { Request, Response } from 'express'
 import { User } from '../types/user'
-import { prisma } from '../prisma/client'
+import { prisma } from '../prismaClient'
 
 async function getUsers(req: Request, res: Response) {
   try {

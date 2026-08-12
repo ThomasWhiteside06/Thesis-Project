@@ -14,5 +14,6 @@
     "strict": false,
     "sourceMap": true
   },
-  "include": ["./**/*.ts", "scripts/MOCK"]
+ "include": ["./**/*.ts", "prisma", "scripts/MOCK"]
+ 
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { Account } from "../types/account";
-import { prisma } from "../prisma/client";
+import { prisma } from "../prismaClient";
 
 async function getAccounts(req: Request, res: Response) {
   try {

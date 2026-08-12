@@ -1,5 +1,4 @@
-// 
-
+import './env-loader'
 
 import { defineConfig } from "@prisma/config";
 

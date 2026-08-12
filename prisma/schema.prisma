@@ -25,11 +25,11 @@ model User {
 }
 
 model Account {
-  id          String  @id @default(uuid())
+  id          String @id @default(uuid())
   userId      String
   accountType String
   accountName String
-  balance     Decimal @db.Decimal(10, 2)
+  balance     Float
 
   user User @relation(fields: [userId], references: [id])
 }
@@ -39,7 +39,7 @@ model Transaction {
   categories  String[]
   senderId    String
   recipientId String
-  amount      Decimal  @db.Decimal(10, 2)
+  amount      Float
   date        DateTime
   regular     Boolean
   frequency   String
