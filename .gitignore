@@ -3,4 +3,7 @@ dist/
 .env
 .env.local
 .env.production
+<<<<<<< HEAD
 .DS_Store
+=======
+>>>>>>> main

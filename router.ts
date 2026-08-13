@@ -21,13 +21,15 @@ import {
   getTransactionById,
   createTransaction,
   updateTransaction,
-  deleteTransaction
+  deleteTransaction,
+  getTransactionByUserId
 } from "./controller/transaction";
+
 
 const router = Router();
 
 router.get("/", (req: Request, res: Response) => {
-  res.json({ message: "Router active" });
+  res.json({ message: "Budget Router active" });
 });
 
 router.get("/users", (req: Request, res: Response) => getUsers(req, res));
@@ -49,5 +51,5 @@ router.get('/transactions/:id', getTransactionById)
 router.post('/transactions', createTransaction)
 router.put('/transactions/:id', updateTransaction)
 router.delete('/transactions/:id', deleteTransaction)
-
+router.get('/transactions/user/:user_id',getTransactionByUserId)
 export default router;
