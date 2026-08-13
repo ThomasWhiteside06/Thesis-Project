@@ -10,10 +10,12 @@ body {
   --primary: white;
   --text: black;
   --border: rgb(134, 131, 131);
+  --trans-background: rgb(226, 226, 226)
 }
 
 .dark-mode {
   --nav-bar: rgb(28, 28, 28);
   --primary: rgb(54, 54, 54);
   --text: white;
+  --trans-background: rgb(30, 30, 30)
 }

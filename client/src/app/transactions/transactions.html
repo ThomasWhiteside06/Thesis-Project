@@ -1,3 +1,28 @@
 <div id = 'transactions-container'>
-    <p>transactions works!</p>
+    <div id = 'accounts-list' class = 'container-test'></div>
+    <div id = 'middle-col'>
+        <div id = 'transaction-details' class = 'container-test'>
+            <h1 id = 'transactions-title'>Transactions:</h1>
+        </div>
+        <div id = 'regular-transactions' class = 'container-test'></div>
+    </div>
+    <div id = 'right-col'>
+        <div id = 'right-top'>
+            <div id="transactions" class = 'container-test'>
+                <h2 class = 'title'>Transactions:</h2>
+                <div id = 'scroll-box'>
+                    <div class="transaction" *ngFor="let transaction of transactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction)}">
+                        <div class = 'transaction-recipient'>{{ userNames[getOtherUserId(transaction)] }}</div>
+                        <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                        <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
+                        <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                    </div>
+                </div>
+            </div>
+            <div id = 'add-transactions' class = 'container-test'>
+            
+            </div>
+        </div>
+        <div id = 'upcoming-transactions' class = 'container-test'></div>
+    </div>
 </div>
