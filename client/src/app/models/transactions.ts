@@ -22,7 +22,7 @@ export interface NewTransaction {
 }
 
 export interface Transaction{
-    id: string,
+    id?: string,
     categories: string[],
     senderId: string,
     recipientId: string,

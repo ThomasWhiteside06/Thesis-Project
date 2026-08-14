@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 })
 export class AuthService {
   // Temporary until login is implemented
-  private userId = '303a8279-3df3-4567-bac2-0f5645810998';
+  private userId = 'badb8d32-c7d2-4787-941c-f754936f7ed1';
 
   getUserId(): string {
     return this.userId;

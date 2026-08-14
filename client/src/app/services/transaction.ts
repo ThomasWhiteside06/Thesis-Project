@@ -17,12 +17,4 @@ export class TransactionService {
     addTransaction(transaction: Transaction): Observable<Transaction> {
         return this.http.post<Transaction>(`${this.apiUrl}/transactions/`, transaction); 
     }
-
-    updateTransaction(transId: string, transaction: Transaction): Observable<Transaction> {
-        return this.http.put<Transaction>(`${this.apiUrl}/users/${transId}`, transaction);
-    }
-
-    deleteTransaction(transId: string): Observable<void> {
-        return this.http.delete<void>(`${this.apiUrl}/users/${transId}`);
-    }
 }

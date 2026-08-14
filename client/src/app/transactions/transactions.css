@@ -1,11 +1,14 @@
 #transactions-container {
     margin-top: 0;
     background-color: var(--primary);
-    height: 814px;
+    height: calc(100vh - 100px);
+    min-height: 814px;
+    box-sizing: border-box;
     color: var(--text);
     padding-top: 20px;
     display: grid;
     grid-template-columns: 20% 30% 50%;
+    grid-template-rows: 1fr;
 }
 
 .title {
@@ -23,6 +26,7 @@
     display: flex;
     margin-bottom: 20px;
     position: relative;
+    cursor: pointer;
 }
 
 .incoming-transaction {
@@ -31,6 +35,11 @@
 
 .outgoing-transaction {
     box-shadow: 0 0 10px red;
+}
+
+.selected-transaction {
+    transform: scale(1.02);
+    border: 2px solid var(--text);
 }
 
 .transaction-recipient {
@@ -66,36 +75,98 @@
     box-sizing: border-box;
 }
 
-.middle-col {
+#middle-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    box-sizing: border-box;
 }
 
 #transaction-details {
-    height: 80%;
+    height: 25%;
+    padding: 20px;
     box-sizing: border-box;
     text-align: center;
+    overflow-y: hidden;
+}
+
+#details-container {
+    padding: 15px 30px;
+    box-sizing: border-box;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    background-color: var(--trans-background);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 30px;
+    text-align: center;
+    align-items: center;
+}
+
+#details-container.incoming-details {
+    border: 2px solid green;
+    box-shadow: 0 0 8px green;
+}
+
+#details-container.outgoing-details {
+    border: 2px solid red;
+    box-shadow: 0 0 8px red;
+}
+
+#details-container h1 {
+    margin: 0 0 10px;
+    font-size: 1.5rem;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+#details-container h3 {
+    margin: 4px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    line-height: 1.2;
 }
 
 #regular-transactions {
-    height: 20%;
+    text-align: center;
+    height: 80%;
     box-sizing: border-box;
 }
 
-.right-col {
+#regular-scroll-box {
+    padding: 20px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: var(--secondary) var(--primary);
+}
+
+#right-col {
     display: flex;
     flex-direction: column;
+    height: 100%;
+    min-height: 0;
 }
 
 #right-top {
-    height: 80%;
+    height: 75%;
+    min-height: 0;
     display: grid;
     grid-template-columns: 60% 40%;
+}
+
+#transactions {
+    min-height: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 
 #upcoming-transactions {
     height: 20%;
+    padding: 0 20px;
     box-sizing: border-box;
 }
 
@@ -113,9 +184,98 @@
 }
 
 #transactions-title {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 15px 20px 10px;
     font-size: 2.5rem;
-    translate: 0 -20px;
+    line-height: 1.1;
+    text-align: center;
+    color: var(--tertiary);
+    -webkit-text-stroke: 1px var(--secondary);
+    border: 1px solid var(--border);
 }
+
+#add-transactions {
+    padding: 20px;
+    box-sizing: border-box;
+    height: 100%;
+    background-color: var(--primary);
+    color: var(--text);
+    overflow-y: auto;
+}
+
+#add-transactions h2 {
+    text-align: center;
+}
+
+#add-transactions form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#add-transactions .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#add-transactions label {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text);
+}
+
+#add-transactions input,
+#add-transactions select {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background-color: var(--trans-background);
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+}
+
+#add-transactions input:focus,
+#add-transactions select:focus {
+    border-color: var(--tertiary);
+    box-shadow: 0 0 5px var(--tertiary);
+}
+
+#add-transactions input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    accent-color: var(--tertiary);
+}
+
+#add-transactions .checkbox-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+}
+
+#add-transactions button {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid var(--secondary);
+    border-radius: 10px;
+    background-color: var(--secondary);
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+#add-transactions button:hover {
+    box-shadow: 0 0 10px var(--tertiary);
+    background-color: var(--tertiary);
+}
+
 
 
 
