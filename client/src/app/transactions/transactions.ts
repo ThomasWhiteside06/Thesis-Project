@@ -33,35 +33,87 @@ export class Transactions {
   upcomingTransaction: Transaction | null = null;
   accounts: Account[] = [];
   selectedAccounts: string[] = [];
+  newIncoming: boolean = false;
+  currentDate = new Date();
 
   constructor(private currencyService: CurrencyService, private accountService: AccountService, private userService: UserService, private transactionService: TransactionService, private authService: AuthService, private cdr: ChangeDetectorRef) {
     this.loadTransactions();
-    setInterval(() => {this.checkRecurringTransactions()}, 60000);
+    setInterval(() => {this.checkRecurringTransactions(); this.currentDate = new Date();}, 60000);
   }
 
   loadTransactions(): void {
     const userId = this.authService.getUserId();
-    console.log(userId)
-    forkJoin({user: this.userService.getUser(userId), transactions: this.transactionService.getTransactions(userId), accounts: this.accountService.getAccounts()}).subscribe({
+    forkJoin({
+        user: this.userService.getUser(userId),
+        transactions: this.transactionService.getTransactions(userId),
+        accounts: this.accountService.getAccounts()
+    }).subscribe({
         next: ({ user, transactions, accounts }) => {
             this.currency = user.currency ?? 'GBP';
-            this.transactions = transactions.filter(transaction => transaction.senderId === userId || transaction.recipientId === userId).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-            this.regularTransactions = this.transactions.filter(transaction => transaction.regular);
-            this.checkRecurringTransactions();
-            this.upcomingTransaction = this.getNextOutgoingTransaction();
-            this.accounts = accounts.filter(account => account.userId === userId);
-            const otherUserIds = [...new Set(this.transactions.map(transaction => transaction.senderId === userId ? transaction.recipientId : transaction.senderId))]
+            this.transactions = transactions
+                .filter(transaction =>
+                    transaction.senderId === userId ||
+                    transaction.recipientId === userId
+                )
+                .sort((a, b) =>
+                    new Date(b.date).getTime() -
+                    new Date(a.date).getTime()
+                );
+            this.regularTransactions = this.transactions
+                .filter(transaction => transaction.regular)
+                .sort((a, b) => {
+                    const nextA = this.getNextTransactionDate(a);
+                    const nextB = this.getNextTransactionDate(b);
+
+                    if (!nextA || !nextB) {
+                        return 0;
+                    }
+                    return nextA.getTime() - nextB.getTime();
+                });
+            this.accounts = accounts.filter(
+                account => account.userId === userId
+            );
+            const otherUserIds = [
+                ...new Set(
+                    this.transactions.map(transaction =>
+                        transaction.senderId === userId
+                            ? transaction.recipientId
+                            : transaction.senderId
+                    )
+                )
+            ];
             if (otherUserIds.length === 0) {
+                this.upcomingTransaction = this.getNextOutgoingTransaction();
                 this.cdr.detectChanges();
                 return;
             }
-            forkJoin(otherUserIds.map(id => this.userService.getUser(id))).subscribe({
+            forkJoin(
+                otherUserIds.map(id => this.userService.getUser(id))
+            ).subscribe({
                 next: (users) => {
-                    users.forEach(user => {this.userNames[user.id] = `${user.firstName} ${user.lastname}`;});
+                    users.forEach(user => {
+                        this.userNames[user.id] =
+                            `${user.firstName} ${user.lastname}`;
+                    });
+                    this.upcomingTransaction =
+                        this.getNextOutgoingTransaction();
+
                     this.cdr.detectChanges();
-                }, error: (error) => {console.error('Failed to load transaction users:', error);}
+                },
+                error: (error) => {
+                    console.error(
+                        'Failed to load transaction users:',
+                        error
+                    );
+                }
             });
-        }, error: (error) => {console.error('Failed to load transactions:', error);}
+        },
+        error: (error) => {
+            console.error(
+                'Failed to load transactions:',
+                error
+            );
+        }
     });
   }
 
@@ -72,8 +124,12 @@ export class Transactions {
 
   getOtherUserId(transaction: Transaction): string {
     const userId = this.authService.getUserId();
-    if (transaction.senderId === userId) {return transaction.recipientId;}
-    return transaction.senderId;
+    const otherUserId = transaction.senderId === userId ? transaction.recipientId : transaction.senderId;
+    console.log('Transaction:', transaction);
+    console.log('Current user:', userId);
+    console.log('Other user ID:', otherUserId);
+    console.log('Name:', this.userNames[otherUserId]);
+    return otherUserId;
   }
 
   getOtherUser(transaction: Transaction): void {
@@ -123,8 +179,8 @@ export class Transactions {
     const userId = this.authService.getUserId();
     const newTransaction: Transaction = {
         categories: [this.newCategories],
-        senderId: userId,
-        recipientId: this.newRecipientId,
+        senderId: this.newIncoming ? this.newRecipientId : userId,
+        recipientId: this.newIncoming ? userId : this.newRecipientId,
         amount: this.newAmount,
         date: new Date(this.newDate),
         regular: this.newRegular,
@@ -134,18 +190,26 @@ export class Transactions {
     console.log('Creating transaction:', newTransaction);
     this.transactionService.addTransaction(newTransaction).subscribe({
         next: (transaction) => {
-            console.log('Transaction created:', transaction);
-            // Add the new transaction to the displayed list
-            this.transactions.push(transaction);
-            // Clear the form
-            this.newRecipientId = '';
-            this.newAmount = 0;
-            this.newCategories = '';
-            this.newDate = '';
-            this.newRegular = false;
-            this.newFrequency = 'once';
-            this.cdr.detectChanges();
-        },
+          console.log('Transaction created:', transaction);
+          this.transactions.push(transaction);
+          if (transaction.regular) {this.regularTransactions.push(transaction);}
+          this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          this.regularTransactions.sort((a, b) => {
+              const nextA = this.getNextTransactionDate(a);
+              const nextB = this.getNextTransactionDate(b);
+              if (!nextA || !nextB) {return 0}
+              return nextA.getTime() - nextB.getTime();
+          });
+          this.upcomingTransaction = this.getNextOutgoingTransaction();
+          console.log('Final upcoming transaction:', this.upcomingTransaction);
+          this.newRecipientId = '';
+          this.newAmount = 0;
+          this.newCategories = '';
+          this.newDate = '';
+          this.newRegular = false;
+          this.newFrequency = 'once';
+          this.cdr.detectChanges();
+      },
         error: (error) => {
             console.error('Failed to create transaction:', error);
             console.error('Backend response:', error.error);
@@ -156,9 +220,25 @@ export class Transactions {
   getNextOutgoingTransaction(): Transaction | null {
     const userId = this.authService.getUserId();
     const now = new Date();
-    const outgoingRegularTransactions = this.transactions.filter(transaction => transaction.senderId === userId && transaction.regular).map(transaction => ({transaction, nextDate: this.getNextTransactionDate(transaction)})).filter(item => item.nextDate! > now).sort((a, b) => a.nextDate!.getTime() - b.nextDate!.getTime());
-    return outgoingRegularTransactions[0]?.transaction ?? null;
+    const possibleTransactions = this.transactions
+        .filter(transaction => transaction.senderId === userId)
+        .map(transaction => ({
+            transaction,
+            nextDate: transaction.regular
+                ? this.getNextTransactionDate(transaction)
+                : new Date(transaction.date)
+        }))
+        .filter(item =>
+            item.nextDate !== null &&
+            item.nextDate > now
+        )
+        .sort((a, b) =>
+            a.nextDate!.getTime() - b.nextDate!.getTime()
+        );
+    console.log('Possible upcoming transactions:', possibleTransactions);
+    return possibleTransactions[0]?.transaction ?? null;
   }
+
 
   toggleAccount(accountId: string): void {
     if (this.selectedAccounts.includes(accountId)) {this.selectedAccounts = this.selectedAccounts.filter(id => id !== accountId)} else {this.selectedAccounts.push(accountId)}
@@ -167,10 +247,18 @@ export class Transactions {
   checkRecurringTransactions(): void {
     const now = new Date();
     this.regularTransactions.forEach(transaction => {
-      const nextDate = this.getNextOccurrence(transaction);
-      if (nextDate && nextDate <= now) {this.createRecurringOccurrence(transaction);}
+        const nextDate = this.getNextOccurrence(transaction);
+        if (!nextDate || nextDate > now) {return;}
+        const alreadyExists = this.transactions.some(existing =>
+            existing.id !== transaction.id &&
+            existing.senderId === transaction.senderId &&
+            existing.recipientId === transaction.recipientId &&
+            existing.amount === transaction.amount &&
+            existing.date.getTime() === nextDate.getTime()
+        );
+        if (!alreadyExists) {this.createRecurringOccurrence(transaction);}
     });
-  }
+}
 
   getNextOccurrence(transaction: Transaction): Date | null {
     if (!transaction.regular || !transaction.frequency) {return null}
@@ -201,10 +289,13 @@ export class Transactions {
       ...transaction,
       id: undefined,
       date: nextDate,
-      start: transaction.start ? new Date(transaction.start) : undefined,
     };
     this.transactions.push(newTransaction);
     this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
     this.cdr.detectChanges();
+  }
+
+  isPastTransaction(transaction: Transaction): boolean {
+    return new Date(transaction.date) <= this.currentDate;
   }
 }

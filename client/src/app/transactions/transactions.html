@@ -40,19 +40,30 @@
             <div id="transactions" class = 'container-test'>
                 <h2 class = 'title'>Transactions:</h2>
                 <div id = 'scroll-box'>
-                    <div class="transaction" *ngFor="let transaction of transactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
-                        <div class = 'transaction-recipient'>{{ userNames[getOtherUserId(transaction)] }}</div>
-                        <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
-                        <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
-                        <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
-                    </div>
+                    <ng-container *ngFor="let transaction of transactions">
+                        <div class="transaction" *ngIf="isPastTransaction(transaction)" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
+                            <div class = 'transaction-recipient'>{{ userNames[getOtherUserId(transaction)] }}</div>
+                            <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                            <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
+                            <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                        </div>
+                    </ng-container>
                 </div>
             </div>
             <div id = 'add-transactions' class = 'container-test'>
                 <h2>Add Transaction:</h2>
                 <form (ngSubmit)="addTransaction()">
+                    <label>Transaction Type:</label>
+                    <div class="transaction-toggle">
+                        <span [class.active]="!newIncoming">Outgoing</span>
+                        <label class="switch">
+                            <input type="checkbox" name="incoming" [(ngModel)]="newIncoming">
+                            <span class="slider"></span>
+                        </label>
+                        <span [class.active]="newIncoming">Incoming</span>
+                    </div>
                     <div class="form-group">
-                        <label for="recipient">Recipient:</label>
+                        <label for="recipient">{{ newIncoming ? 'Sender:' : 'Recipient:' }}</label>
                         <input
                             type="text"
                             id="recipient"
