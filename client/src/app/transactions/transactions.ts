@@ -227,14 +227,7 @@ export class Transactions {
             nextDate: transaction.regular
                 ? this.getNextTransactionDate(transaction)
                 : new Date(transaction.date)
-        }))
-        .filter(item =>
-            item.nextDate !== null &&
-            item.nextDate > now
-        )
-        .sort((a, b) =>
-            a.nextDate!.getTime() - b.nextDate!.getTime()
-        );
+        })).filter(item => item.nextDate !== null && item.nextDate > now).sort((a, b) => a.nextDate!.getTime() - b.nextDate!.getTime());
     console.log('Possible upcoming transactions:', possibleTransactions);
     return possibleTransactions[0]?.transaction ?? null;
   }
