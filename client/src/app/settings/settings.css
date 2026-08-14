@@ -84,7 +84,12 @@ form button {
     margin: 0 auto;
 }
 
+#delete-user-button {
+    translate: -500px;
+}
+
 
 #temp-create-container {
+   
     translate: -1612px 250px;
 }

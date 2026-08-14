@@ -4,6 +4,7 @@ import { currencies } from '../currencies';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService } from '../services/user';
+import { AuthService } from '../services/auth';
 import { ChangeDetectorRef } from '@angular/core';
 import { UpdateUser } from '../models/users';
 import type { NewUser } from '../models/users';
@@ -16,7 +17,7 @@ import type { NewUser } from '../models/users';
   styleUrl: './settings.css',
 })
 export class Settings {
-  constructor(public themeService: ThemeService, private userService: UserService, private cdr: ChangeDetectorRef) {
+  constructor(public themeService: ThemeService, private userService: UserService, private authService: AuthService, private cdr: ChangeDetectorRef) {
     this.loadUser();
   }
   currencies = currencies;
@@ -39,7 +40,8 @@ export class Settings {
     const updatedUser:UpdateUser = {
         email: this.email,
         firstName: this.forename,
-        lastname: this.surname
+        lastname: this.surname,
+        currency: this.selectedCurrency
     };
     console.log('Updating user:', this.userId);
     console.log('Data being sent:', updatedUser);
@@ -54,12 +56,13 @@ export class Settings {
   }
 
   loadUser(): void {
-    const userId = "badb8d32-c7d2-4787-941c-f754936f7ed1"; //temp until login built
+    const userId = this.authService.getUserId();
     this.userService.getUser(userId).subscribe(user => {
         this.userId = user.id;
         this.email = user.email;
         this.forename = user.firstName;
         this.surname = user.lastname;
+        this.selectedCurrency = user.currency!;
         this.cdr.detectChanges();
     });
   }
@@ -81,6 +84,10 @@ export class Settings {
         },
         error: (error) => {console.error('Failed to update user:', error);console.error('Backend response:', error.error)}
     });
+  }
+
+  deleteUser():void {
+    this.userService.deleteUser(this.userId).subscribe(response => {console.log(response)})
   }
 }
 

@@ -20,4 +20,5 @@ export interface UpdateUser {
     password?: string;
     firstName: string;
     lastname: string;
+    currency: string;
 }
