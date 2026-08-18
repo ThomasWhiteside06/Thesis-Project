@@ -19,21 +19,29 @@ import { Account } from '../models/accounts';
   styleUrl: './transactions.css',
 })
 export class Transactions {
+  //transactions
   transactions: Transaction[] = [];
+  displayedTransactions: Transaction[] = [];
+  selectedTransaction: Transaction | null = null;
+  regularTransactions: Transaction[] = [];
+  displayedRegularTransactions: Transaction[] = [];
+  upcomingTransaction: Transaction | null = null;
+  //user info
   currency: string = '';
   userNames: { [id: string]: string } = {};
-  selectedTransaction: Transaction | null = null;
+  //creating new transaction
   newRecipientId: string = '';
   newAmount: number = 0;
   newCategories: string = '';
   newDate: string = '';
   newRegular: boolean = false;
   newFrequency: string = 'once';
-  regularTransactions: Transaction[] = [];
-  upcomingTransaction: Transaction | null = null;
+  //accounts
   accounts: Account[] = [];
+  allAccounts: Account[] = [];
   selectedAccounts: string[] = [];
   newIncoming: boolean = false;
+  //miscelaneous
   currentDate = new Date();
   loading = true;
 
@@ -43,66 +51,96 @@ export class Transactions {
   }
 
   loadTransactions(): void {
-    this.loading = true;
-    const userId = this.authService.getUserId();
-    const accountId = this.authService.getAccountId();
-    forkJoin({
-        user: this.userService.getUser(userId),
-        transactions: this.transactionService.getTransactionsForAccount(accountId),
-        accounts: this.accountService.getAccounts()
-    }).subscribe({
-        next: ({ user, transactions, accounts }) => {
-            this.currency = user.currency ?? 'GBP';
-            this.transactions = transactions.filter(transaction => transaction.senderId === accountId || transaction.recipientId === accountId).sort((a, b) =>new Date(b.date).getTime() - new Date(a.date).getTime());
-            this.regularTransactions = this.transactions.filter(transaction => transaction.regular).sort((a, b) => {
-              const nextA = this.getNextTransactionDate(a);
-              const nextB = this.getNextTransactionDate(b);
-              if (!nextA || !nextB) {return 0;}
-              return nextA.getTime() - nextB.getTime();
-            });
-            const allAccounts = accounts;
-            this.accounts = accounts.filter(account => account.userId === userId);
-            const otherUserIds = [...new Set(
-              this.transactions.map(transaction => {
-                const otherAccountId = transaction.senderId === accountId ? transaction.recipientId : transaction.senderId;
-                const otherAccount = allAccounts.find(account => account.id === otherAccountId);
-                return otherAccount?.userId;
-              }).filter((id): id is string => !!id)
-            )];
-            if (otherUserIds.length === 0) {
-                this.upcomingTransaction = this.getNextOutgoingTransaction();
-                this.loading = false;
-                this.cdr.detectChanges();
-                return;
+  this.loading = true;
+  const userId = this.authService.getUserId();
+  console.log('Logged in userId:', userId);
+  forkJoin({user: this.userService.getUser(userId), accounts: this.accountService.getAccounts()}).subscribe({
+    next: ({ user, accounts }) => {
+      console.log('All accounts:', accounts);
+      console.log('Account userIds:', accounts.map(account => account.userId));
+      this.currency = user.currency ?? 'GBP';
+      this.allAccounts = accounts;
+      this.accounts = accounts.filter(account => account.userId === userId);
+      this.selectedAccounts = this.accounts.map(account => account.id);
+      console.log('User accounts:', this.accounts);
+      if (this.accounts.length === 0) {
+        console.warn('No accounts found for userId:', userId);
+        this.transactions = [];
+        this.regularTransactions = [];
+        this.displayedTransactions = [];
+        this.displayedRegularTransactions = [];
+        this.loading = false;
+        this.cdr.detectChanges();
+        return;
+      }
+      forkJoin(this.accounts.map(account => this.transactionService.getTransactionsForAccount(account.id))).subscribe({
+        next: (transactionArrays) => {
+          this.transactions = transactionArrays.flat().filter((transaction, index, array) => index === array.findIndex(t => t.id === transaction.id)).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+          this.regularTransactions = this.transactions.filter(transaction => transaction.regular).sort((a, b) => {
+            const nextA = this.getNextTransactionDate(a);
+            const nextB = this.getNextTransactionDate(b);
+            if (!nextA || !nextB) {return 0;}
+            return nextA.getTime() - nextB.getTime();
+          });
+          this.displayedTransactions = [...this.transactions];
+          this.displayedRegularTransactions = [...this.regularTransactions];
+          const myAccountIds = new Set(this.accounts.map(account => account.id));
+          const otherUserIds = [...new Set(this.transactions.map(transaction => {
+            const otherAccountId = myAccountIds.has(transaction.senderId) ? transaction.recipientId : transaction.senderId;
+            const otherAccount = this.allAccounts.find(account => account.id === otherAccountId);
+            return otherAccount?.userId;
+          }).filter((id): id is string => !!id))];
+          if (otherUserIds.length === 0) {
+            this.upcomingTransaction = this.getNextOutgoingTransaction();
+            this.loading = false;
+            this.cdr.detectChanges();
+            return;
+          }
+          forkJoin(otherUserIds.map(id => this.userService.getUser(id))).subscribe({
+            next: (users) => {
+              users.forEach(user => { this.userNames[user.id] = `${user.firstName} ${user.lastname}`;});
+              this.upcomingTransaction = this.getNextOutgoingTransaction();
+              this.loading = false;
+              this.cdr.detectChanges();
+            },
+            error: (error) => {
+              console.error('Failed to load transaction users:', error);
+              this.loading = false;
+              this.cdr.detectChanges();
             }
-            forkJoin(otherUserIds.map(id => this.userService.getUser(id))).subscribe({
-              next: (users) => {
-                users.forEach(user => {this.userNames[user.id] = `${user.firstName} ${user.lastname}`;});
-                this.upcomingTransaction = this.getNextOutgoingTransaction();
-                this.loading = false
-                this.cdr.detectChanges();
-              },
-                error: (error) => {
-                  console.error('Failed to load transaction users:', error);
-                  this.loading = false
-                  this.cdr.detectChanges();
-                }
-            });
+          });
         },
+
         error: (error) => {
-          console.error('Failed to load transactions:', error);
-          this.loading = false
+          console.error(
+            'Failed to load account transactions:',
+            error
+          );
+
+          this.loading = false;
           this.cdr.detectChanges();
         }
-    });
-  }
+      });
+    },
+
+    error: (error) => {
+      console.error(
+        'Failed to load user/accounts:',
+        error
+      );
+
+      this.loading = false;
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   getOtherUserId(transaction: Transaction): string {
-    const accountId = this.authService.getAccountId();
-    const otherAccountId = transaction.senderId === accountId ? transaction.recipientId : transaction.senderId;
-    const otherAccount = this.accounts.find(account => account.id === otherAccountId);
-    return otherAccount?.userId ?? '';
-  }
+  const myAccountIds = new Set(this.accounts.map(account => account.id));
+  const otherAccountId = myAccountIds.has(transaction.senderId)? transaction.recipientId : transaction.senderId;
+  const otherAccount = this.allAccounts.find(account => account.id === otherAccountId);
+  return otherAccount?.userId ?? '';
+}
 
   getOtherUser(transaction: Transaction): void {
     const otherUserId = this.getOtherUserId(transaction);
@@ -113,8 +151,7 @@ export class Transactions {
   }
 
   isIncoming(transaction: Transaction): boolean {
-    const accountId = this.authService.getAccountId();
-    return transaction.recipientId === accountId;
+    return this.selectedAccounts.includes(transaction.recipientId);
   }
 
   selectTransaction(transaction: Transaction): void {
@@ -147,53 +184,57 @@ export class Transactions {
   }
 
   addTransaction(): void {
-    const accountId = this.authService.getAccountId();
+    if (this.selectedAccounts.length !== 1) {
+      console.error('Please select exactly one account.');
+      return;
+    }
+    const selectedAccountId = this.selectedAccounts[0];
     const newTransaction: Transaction = {
-        categories: [this.newCategories],
-        senderId: this.newIncoming ? this.newRecipientId : accountId,
-        recipientId: this.newIncoming ? accountId : this.newRecipientId,
-        amount: this.newAmount,
-        date: new Date(this.newDate),
-        regular: this.newRegular,
-        frequency: this.newRegular ? this.newFrequency : 'once',
-        start: new Date(this.newDate)
+      categories: [this.newCategories],
+      senderId: this.newIncoming ? this.newRecipientId : selectedAccountId,
+      recipientId: this.newIncoming ? selectedAccountId : this.newRecipientId,
+      amount: this.newAmount,
+      date: new Date(this.newDate),
+      regular: this.newRegular,
+      frequency: this.newRegular ? this.newFrequency : 'once',
+      start: new Date(this.newDate)
     };
     this.transactionService.addTransaction(newTransaction).subscribe({
-        next: (transaction) => {
-          this.transactions.push(transaction);
-          if (transaction.regular) {this.regularTransactions.push(transaction);}
-          this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          this.regularTransactions.sort((a, b) => {
-              const nextA = this.getNextTransactionDate(a);
-              const nextB = this.getNextTransactionDate(b);
-              if (!nextA || !nextB) {return 0}
-              return nextA.getTime() - nextB.getTime();
-          });
-          this.upcomingTransaction = this.getNextOutgoingTransaction();
-          this.newRecipientId = '';
-          this.newAmount = 0;
-          this.newCategories = '';
-          this.newDate = '';
-          this.newRegular = false;
-          this.newFrequency = 'once';
-          this.cdr.detectChanges();
+      next: (transaction) => {
+        this.transactions.push(transaction);
+        if (transaction.regular) {this.regularTransactions.push(transaction);}
+        this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        this.regularTransactions.sort((a, b) => {
+          const nextA = this.getNextTransactionDate(a);
+          const nextB = this.getNextTransactionDate(b);
+          if (!nextA || !nextB) {return 0;}
+          return nextA.getTime() - nextB.getTime();
+        });
+        this.upcomingTransaction = this.getNextOutgoingTransaction();
+        this.newRecipientId = '';
+        this.newAmount = 0;
+        this.newCategories = '';
+        this.newDate = '';
+        this.newRegular = false;
+        this.newFrequency = 'once';
+        this.cdr.detectChanges();
       },
-        error: (error) => {
-            console.error('Failed to create transaction:', error);
-            console.error('Backend response:', error.error);
-        }
+      error: (error) => {
+        console.error('Failed to create transaction:', error);
+        console.error('Backend response:', error.error);
+      }
     });
   }
 
   getNextOutgoingTransaction(): Transaction | null {
-    const accountId = this.authService.getAccountId();
-    const possibleTransactions = this.transactions.filter(transaction => transaction.senderId === accountId).map(transaction => ({transaction, nextDate: transaction.regular ? this.getNextTransactionDate(transaction) : new Date(transaction.date)})).filter(item => item.nextDate !== null && item.nextDate > new Date()).sort((a, b) => a.nextDate!.getTime() - b.nextDate!.getTime());
+    const myAccountIds = new Set(this.accounts.map(account => account.id));
+    const possibleTransactions = this.transactions.filter(transaction => myAccountIds.has(transaction.senderId)).map(transaction => ({transaction, nextDate: transaction.regular ? this.getNextTransactionDate(transaction) : new Date(transaction.date)})).filter(item => item.nextDate !== null && item.nextDate > new Date()).sort((a, b) => a.nextDate!.getTime() - b.nextDate!.getTime());
     return possibleTransactions[0]?.transaction ?? null;
   }
 
-
   toggleAccount(accountId: string): void {
-    if (this.selectedAccounts.includes(accountId)) {this.selectedAccounts = this.selectedAccounts.filter(id => id !== accountId)} else {this.selectedAccounts.push(accountId)}
+    if (this.selectedAccounts.includes(accountId)) {this.selectedAccounts = this.selectedAccounts.filter(id => id !== accountId);} else {this.selectedAccounts.push(accountId);}
+    this.updateDisplayedTransactions();
   }
 
   checkRecurringTransactions(): void {
@@ -252,7 +293,8 @@ export class Transactions {
   }
 
   toggleAllAccounts(): void {
-    if (this.selectedAccounts.length === this.accounts.length) {this.selectedAccounts = [];} else {this.selectedAccounts = this.accounts.map(account => account.id);}
+    if (this.selectedAccounts.length === this.accounts.length) {this.selectedAccounts = []} else {this.selectedAccounts = this.accounts.map(account => account.id);}
+    this.updateDisplayedTransactions();
   }
 
   deleteTransaction(): void {
@@ -272,5 +314,21 @@ export class Transactions {
 
   getCurrencySymbol(code: string) {
     return this.transactionService.getCurrencySymbol(code);
+  }
+
+  updateDisplayedTransactions(): void {
+    if (this.selectedAccounts.length === 0) {
+      this.displayedTransactions = [];
+      this.displayedRegularTransactions = [];
+      return;
+    }
+    this.displayedTransactions = this.transactions.filter(transaction => this.selectedAccounts.includes(transaction.senderId) || this.selectedAccounts.includes(transaction.recipientId));
+    this.displayedRegularTransactions = this.regularTransactions.filter(transaction => this.selectedAccounts.includes(transaction.senderId) || this.selectedAccounts.includes(transaction.recipientId));
+  }
+
+  getOtherAccount(transaction: Transaction): Account | undefined {
+    const myAccountIds = new Set(this.accounts.map(account => account.id));
+    const otherAccountId = myAccountIds.has(transaction.senderId) ? transaction.recipientId : transaction.senderId;
+    return this.allAccounts.find(account => account.id === otherAccountId);
   }
 }

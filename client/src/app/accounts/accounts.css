@@ -65,7 +65,7 @@
     border-radius: 20px;
     padding: 10px;
     display: flex;
-    margin-bottom: 20px;
+    margin-top: 20px;
     position: relative;
     cursor: pointer;
 }
@@ -78,17 +78,195 @@
     box-shadow: 0 0 10px var(--outgoing-glow);
 }
 
+.upcoming-incoming-transaction {
+    box-shadow: 0 0 10px var(--upcoming-incoming-glow);
+}
+
+.upcoming-outgoing-transaction {
+    box-shadow: 0 0 10px var(--upcoming-outgoing-glow);
+}
+
 #right-col {
     display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: 1fr;
 }
 
-#middle-col, #account-transactions, #reccuring-transactions {
+#middle-col {
     padding-left: 30px;
 }
 
+.transaction-recipient {
+    font-size: x-large;
+}
 
+.transaction-amount {
+    font-size: x-large;
+    margin-left: auto;
+}
+
+.incoming-transaction .transaction-amount {
+    color: var(--incoming-glow);
+}
+
+.outgoing-transaction .transaction-amount {
+    color: var(--outgoing-glow);
+}
+
+.transaction-date {
+   position: absolute;
+    bottom: 10px;
+    right: 10px;
+}
+
+.transaction-categories {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+}
+
+#account-transactions,
+#reccuring-transactions {
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-left: 0;
+}
+
+#account-transactions-scroll,
+#reccuring-transactions-scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-color: var(--secondary) var(--primary);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.transaction-content {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.col-text {
+    margin-left: 30px;
+}
+
+.no-selected-account-msg {
+    margin-left: 30px;
+}
+.incoming-text {
+    color: var(--incoming-glow);
+}
+
+.outgoing-text {
+    color: var(--outgoing-glow);
+}
+
+h4 {
+    margin-bottom: 7px;
+    font-size: large;
+}
+
+#recurring-title {
+    margin-top: 100px;
+}
+
+#add-account-button {
+    width: calc(100% - 20px);
+    margin: 0 10px 15px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: var(--secondary);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.2s ease;
+    font-weight: bold;
+}
+
+#add-account-button:hover {
+    box-shadow: 0 0 10px var(--tertiary);
+    background-color: var(--tertiary);
+    border: 1px solid var(--secondary);
+    transform: scale(1.05);
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.add-account-modal {
+    width: 400px;
+    max-width: calc(100vw - 40px);
+    padding: 25px;
+    background-color: var(--primary);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+}
+
+.add-account-modal h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.form-group input,
+.form-group select {
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background-color: var(--primary);
+    color: var(--text);
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 10px 18px;
+    background-color: var(--secondary);
+    border: 1px solid var(--tertiary);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: var(--text);
+    font-weight: bold;
+}
+
+.modal-buttons button:hover {
+    box-shadow: 0 0 10px var(--tertiary);
+    background-color: var(--tertiary);
+    border: 1px solid var(--secondary);
+    transform: scale(1.05);
+}
 
 
 
