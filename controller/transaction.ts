@@ -105,11 +105,31 @@ async function deleteTransaction(req: Request, res: Response) {
     res.status(500).json({ error: "failed to delete transaction" });
   }
 }
+async function getTransactionByUserId(req: Request, res: Response):Promise<void> {
+  try {
+    const user_id = Array.isArray(req.params.user_id)
+      ? req.params.user_id[0]
+      : req.params.user_id; 
 
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        OR: [
+          { senderId: user_id },
+          { recipientId: user_id }
+        ]
+      }
+    })
+    res.json(transactions)
+  } catch (err) {
+    console.error('getTransactionbyUserId failed', err)
+    res.status(500).json({ error:'failed to fetch user transactions by id'})
+  }
+}
 export {
   getTransactions,
   getTransactionById,
   createTransaction,
   updateTransaction,
-  deleteTransaction
+  deleteTransaction,
+  getTransactionByUserId
 };
