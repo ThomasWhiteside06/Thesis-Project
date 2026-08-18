@@ -1,11 +1,96 @@
 #accounts-container {
     margin-top: 0;
     background-color: var(--primary);
-    height: 814px;
+    height: calc(100vh - 100px);
+    min-height: 814px;
+    box-sizing: border-box;
     color: var(--text);
     padding-top: 20px;
+    display: grid;
+    grid-template-columns: 15% 25% 60%;
+    grid-template-rows: 1fr;
+}
+
+.container-test {
+    border: 1px solid var(--border);
+}
+
+.title {
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#accounts-page-title {
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 15px 20px 10px;
+    font-size: 2.5rem;
+    line-height: 1.1;
+    text-align: center;
+    color: var(--tertiary);
+    -webkit-text-stroke: 1px var(--secondary);
+    border: 1px solid var(--border);
+}
+
+#accounts-list {
+    box-sizing: border-box;
+}
+
+#accounts-title {
+    margin-bottom: 21px;
+}
+
+.account {
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background-color: var(--primary);
+    transition: background-color 0.2s ease;
+    margin: 0;
+}
+
+.account:hover {
+    background-color: var(--tertiary);
+}
+
+.account.selected-account {
+    background-color: var(--secondary);;
+}
+
+.transaction {
+    height: 60px;
+    width: 500px;
+    background-color: var(--trans-background);
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    margin-bottom: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+.incoming-transaction {
+    box-shadow: 0 0 10px var(--incoming-glow);
+}
+
+.outgoing-transaction {
+    box-shadow: 0 0 10px var(--outgoing-glow);
+}
+
+#right-col {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    grid-template-rows: 1fr;
+}
+
+#middle-col, #account-transactions, #reccuring-transactions {
     padding-left: 30px;
 }
+
+
+
+
 
 p {
     margin: 0;

@@ -1,21 +1,12 @@
 <div id = 'page'>
     <h1 id = 'title'>Settings:</h1>
     <div id = 'settings-container'>
-        <div class = 'setting-container'>
+        <div class = 'setting-container' id = 'theme-container'>
             <h2 class = 'subtitle'>Theme:</h2>
             <button id = 'theme-button' (click) = 'toggleTheme()'>{{ themeService.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}</button>
+            <button id = 'colourblind-button' (click) = 'toggleColourblind()'>{{ themeService.colourblindMode ? 'Turn Off Colourblind Mode' : 'Turn On Colourblind Mode' }}</button>
         </div>
-        <div class = 'setting-container'>
-            <h2 class = 'subtitle'>Currency:</h2>
-            <select [(ngModel)] = 'selectedCurrency'>
-                <option
-                    *ngFor = 'let currency of currencies'
-                    [value] = 'currency.code'>
-                    {{ currency.code }} - {{ currency.symbol }} - {{ currency.name }}
-                </option>
-            </select>
-        </div>
-        <div class = 'setting-container'>
+        <div class = 'setting-container' id = 'update-container'>
             <h2 class = 'subtitle'>Update Details:</h2>
             <form #form = 'ngForm' (ngSubmit) = 'submitForm()'>
                 <div class = 'form-group'>
@@ -28,14 +19,27 @@
                 </div>
                 <div class = 'form-group'>
                     <label for = 'forename'>Forename:</label>
-                    <input type = 'forename' name = 'forename' [(ngModel)] = 'forename' placeholder = 'Enter new forename...' required>
+                    <input type = 'string' name = 'forename' [(ngModel)] = 'forename' placeholder = 'Enter new forename...' required>
                 </div>
                 <div class = 'form-group'>
                     <label for = 'surname'>Surname:</label>
-                    <input type = 'surname' name = 'surname' [(ngModel)] = 'surname' placeholder = 'Enter new surname...' required>
+                    <input type = 'string' name = 'surname' [(ngModel)] = 'surname' placeholder = 'Enter new surname...' required>
                 </div>
                 <button type = 'submit'>Submit</button>
             </form>
+        </div>
+        <div id = 'account-settings'>
+            <div class = 'setting-container' id = 'currency-container'>
+                <h2 class = 'subtitle'>Currency:</h2>
+                <select [(ngModel)] = 'selectedCurrency'>
+                    <option
+                        *ngFor = 'let currency of currencies'
+                        [value] = 'currency.code'>
+                        {{ currency.code }} - {{ currency.symbol }} - {{ currency.name }}
+                    </option>
+                </select>
+            </div>
+            <button id = 'delete-user-button' (click) = 'deleteUser()'>Delete User</button>
         </div>
         <!-- Add a user - will be moved -->
         <div class = 'setting-container' id = 'temp-create-container'>
@@ -61,6 +65,5 @@
             </form>
         </div>
         <!-- End of add a user -->
-         <button id = 'delete-user-button' (click) = 'deleteUser()'>Delete User</button>
     </div>
 </div>

@@ -30,11 +30,11 @@
 }
 
 .incoming-transaction {
-    box-shadow: 0 0 10px green;
+    box-shadow: 0 0 10px var(--incoming-glow);
 }
 
 .outgoing-transaction {
-    box-shadow: 0 0 10px red;
+    box-shadow: 0 0 10px var(--outgoing-glow);
 }
 
 .selected-transaction {
@@ -52,11 +52,11 @@
 }
 
 .incoming-transaction .transaction-amount {
-    color: green;
+    color: var(--incoming-glow);
 }
 
 .outgoing-transaction .transaction-amount {
-    color: red;
+    color: var(--outgoing-glow);
 }
 
 .transaction-date {
@@ -73,6 +73,32 @@
 
 #accounts-list {
     box-sizing: border-box;
+}
+
+#accounts-title {
+    margin-bottom: 21px;
+}
+
+.account {
+    padding: 12px 15px;
+    margin-bottom: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background-color: var(--primary);
+    transition: background-color 0.2s ease;
+    margin: 0;
+}
+
+.account:hover {
+    background-color: var(--tertiary);
+}
+
+.account.selected-account {
+    background-color: var(--secondary);;
+}
+
+.select-all {
+    font-weight: bold;
 }
 
 #middle-col {
@@ -105,13 +131,13 @@
 }
 
 #details-container.incoming-details {
-    border: 2px solid green;
-    box-shadow: 0 0 8px green;
+    border: 2px solid var(--incoming-glow);
+    box-shadow: 0 0 8px var(--incoming-glow);
 }
 
 #details-container.outgoing-details {
-    border: 2px solid red;
-    box-shadow: 0 0 8px red;
+    border: 2px solid var(--outgoing-glow);
+    box-shadow: 0 0 8px var(--outgoing-glow);
 }
 
 #details-container h1 {
@@ -335,6 +361,41 @@
 
 .switch input:checked + .slider::before {
     transform: translateX(24px);
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100px;
+}
+
+.spinner {
+    width: 35px;
+    height: 35px;
+    border: 4px solid #ddd;
+    border-top: 4px solid #333;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {transform: rotate(360deg);}
+}
+
+.delete-button {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: transparent;
+    font-size: 28px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.2s, transform 0.2s;
+    translate: -20px -110px;
 }
 
 

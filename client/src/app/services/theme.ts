@@ -5,8 +5,10 @@ import { Injectable } from '@angular/core';
 })
 export class ThemeService {
   darkMode: boolean;
+  colourblindMode: boolean;
   constructor() {
     this.darkMode = localStorage.getItem('darkMode') === 'true';
+    this.colourblindMode = localStorage.getItem('colourblindMode') === 'true';
     this.applyTheme();
   }
 
@@ -16,7 +18,14 @@ export class ThemeService {
     this.applyTheme();
   }
 
+  toggleColourblind(): void {
+    this.colourblindMode = !this.colourblindMode;
+    localStorage.setItem('colourblindMode', this.colourblindMode.toString());
+    this.applyTheme();
+  }
+
   private applyTheme(): void {
     document.body.classList.toggle('dark-mode', this.darkMode);
+    document.body.classList.toggle('colourblind-mode', this.colourblindMode);
   }
 }
