@@ -5,6 +5,8 @@ body {
 :root {
   --secondary: rgb(33, 153, 0);
   --tertiary: rgb(133, 195, 117);
+  --incoming-glow: green;
+  --outgoing-glow: red;
 /*Light Mode*/
   --nav-bar: white;
   --primary: white;
@@ -19,3 +21,11 @@ body {
   --text: white;
   --trans-background: rgb(30, 30, 30)
 }
+
+.colourblind-mode {
+  --incoming-glow: #009E73;
+  --outgoing-glow: #0072B2;
+  --secondary: #0072B2;
+  --tertiary: #56B4E9;
+}
+
