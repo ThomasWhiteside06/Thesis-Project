@@ -81,12 +81,12 @@ select {
     height: 100%;
 }
 
-#all-transactions-container {
-    flex: 0 0 75%;
+#regular-payments-container {
+    flex: 0 0 65%;
 }
 
 #upcoming-transactions-container {
-    flex: 0 0 24.5%;
+    flex: 0 0 34.5%;
 }
 
 p {
