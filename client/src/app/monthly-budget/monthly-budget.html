@@ -1,0 +1,52 @@
+<div id="monthly-budget-container">
+    <div *ngIf="loading" class="loading-spinner"><div class="spinner"></div></div>
+    <div *ngIf="!loading" id="budget-content">
+        <div id="budget-left">
+            <div class="budget-period-selector">
+                <button [class.active]="budgetPeriod === 'monthly'" (click)="setBudgetPeriod('monthly')">Monthly Budget</button>
+                <button [class.active]="budgetPeriod === 'yearly'" (click)="setBudgetPeriod('yearly')">Yearly Budget</button>
+            </div>
+            <div id="budget-chart">
+                <!-- CHART GOES HERE -->
+                 <h1 id = 'CHART-PLACEHOLDER'>CHART GOES HERE</h1>
+            </div>
+            <div id="budget-summary">
+                <div class="income-summary">
+                    <span>Total Income: </span>
+                    <strong>+{{ getCurrencySymbol() }}{{ totalIncome | number:'1.2-2' }}</strong>
+                </div>
+                <div class="expense-summary">
+                    <span>Total Expenses: </span>
+                    <strong> -{{ getCurrencySymbol() }}{{ totalExpenses | number:'1.2-2' }}</strong>
+                </div>
+                <div class="remaining-summary">
+                    <span>Remaining: </span>
+                    <strong>{{ getCurrencySymbol() }}{{ remaining | number:'1.2-2' }}</strong>
+                </div>
+            </div>
+            <div id="category-list">
+                <h2>Categories</h2>
+                <div id = 'category-scroll'>
+                    <div class="budget-category" *ngFor="let category of categories" [class.selected-category]="selectedCategory?.name === category.name" [class.remaining-category]="category.name === 'Remaining'" (click)="selectCategory(category)">
+                        <div class="category-name">{{ category.name }}</div>
+                        <div class="category-amount">{{ getCurrencySymbol() }}{{ category.amount | number:'1.2-2' }}</div>
+                        <div class="category-percentage">{{ category.percentage | number:'1.0-1' }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="budget-right">
+            <h2>{{selectedCategory ? selectedCategory.name + ' Transactions' : 'Select A Category To See Transactions'}}</h2>
+            <div *ngIf="selectedCategory" id="category-transactions">
+                <div id = 'transaction-scroll'>
+                    <div class="transaction" *ngFor="let transaction of selectedCategory.transactions">
+                        <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                        <div class="transaction-description">{{ transaction.categories.join(', ') }}</div>
+                        <div class="transaction-amount">-{{ getCurrencySymbol() }}{{ transaction.amount | number:'1.2-2' }}</div>
+                    </div>
+                </div>
+                <p *ngIf="selectedCategory.transactions.length === 0">No transactions in this category.</p>
+            </div>
+        </div>
+    </div>
+</div>
