@@ -1,19 +1,25 @@
 <div id = 'transactions-container'>
     <div id = 'accounts-list' class = 'container-test'>
-        <h2 class="title">Accounts:</h2>
-        <div class="account" *ngFor="let account of accounts">
-            <label>
-                <input type="checkbox" [checked]="selectedAccounts.includes(account.id)" (change)="toggleAccount(account.id)">
-                <span>{{ account.accountName }}</span>
-                <span> - Balance: {{ getCurrencySymbol(currency) }}{{ account.balance }}</span>
-            </label>
+        <h2 id = 'accounts-title' class="title">Accounts:</h2>
+        <div *ngIf="loading" class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+        <div *ngIf="!loading" class="account select-all" [class.selected-account]="selectedAccounts.length === accounts.length" (click)="toggleAllAccounts()">
+            <span>Select All</span>
+        </div>
+        <div class="account" *ngFor="let account of accounts" [class.selected-account]="selectedAccounts.includes(account.id)" (click)="toggleAccount(account.id)">
+            <span>{{ account.accountName }}</span>
+            <span> - Balance: {{ getCurrencySymbol(currency) }}{{ account.balance }}</span>
         </div>
     </div>
     <div id = 'middle-col'>
         <h1 id = 'transactions-title'>Transactions</h1>
         <div id = 'regular-transactions' class = 'container-test'>
-            <h2 class = 'title'>Regular Transactions:</h2>
-            <div id="regular-scroll-box">
+            <h2 class = 'title'>Reccuring Transactions:</h2>
+            <div *ngIf="loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div *ngIf="!loading" id="regular-scroll-box">
                 <div class="transaction" *ngFor="let transaction of regularTransactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
                     <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }}</div>
                     <div class="transaction-date">Next: {{ getNextTransactionDate(transaction) | date:'dd MMM yyyy @ hh:mm a' }}</div>
@@ -39,7 +45,10 @@
         <div id = 'right-top'>
             <div id="transactions" class = 'container-test'>
                 <h2 class = 'title'>Transactions:</h2>
-                <div id = 'scroll-box'>
+                <div *ngIf="loading" class="loading-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <div *ngIf="!loading" id = 'scroll-box'>
                     <ng-container *ngFor="let transaction of transactions">
                         <div class="transaction" *ngIf="isPastTransaction(transaction)" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
                             <div class = 'transaction-recipient'>{{ userNames[getOtherUserId(transaction)] }}</div>
@@ -146,6 +155,7 @@
                     <h3>Frequency: {{ selectedTransaction.frequency }}</h3>
                     <h3>Next transaction: {{ getNextTransactionDate(selectedTransaction) | date:'dd MMM yyyy @ hh:mm a' }}</h3>
                 </ng-container>
+                <button class="delete-button" type="button" (click)="deleteTransaction()" aria-label="Delete transaction" title="Delete transaction">🗑</button>
             </div>
         </div>
     </div>

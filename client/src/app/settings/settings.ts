@@ -36,6 +36,10 @@ export class Settings {
     this.themeService.toggleTheme();
   }
 
+  toggleColourblind(): void {
+    this.themeService.toggleColourblind();
+  }
+
   submitForm(): void {
     const updatedUser:UpdateUser = {
         email: this.email,

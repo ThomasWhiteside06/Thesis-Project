@@ -1,3 +1,48 @@
 <div id = 'accounts-container'>
-    <p>accounts works!</p>
+    <div id = 'accounts-list' class = 'container-test'>
+        <h2 id = 'accounts-title' class="title">Accounts:</h2>
+        <div *ngIf="loading" class="loading-spinner">
+            <div class="spinner"></div>
+        </div>
+        <div class="account" *ngFor="let account of accounts" [class.selected-account]="selectedAccount?.id === account.id" (click)="selectAccount(account)">
+            <span>{{ account.accountName }}</span>
+            <span> - Balance: {{ getCurrencySymbol(currency) }}{{ account.balance }}</span>
+        </div>
+    </div>
+    <div>
+        <div>
+            <h1 id = 'accounts-page-title'>Accounts</h1>
+        </div>
+        <div id = 'middle-col'>
+            <div id = 'account-balance-summary'>
+                <h2>Account balance:</h2>
+            </div>
+        </div>
+    </div>
+    <div id = 'right-col' class = 'container-test'>
+        <div id="account-transactions" class = 'container-test'>
+            <h2>{{ selectedAccount ? selectedAccount.accountName + ' Account Transactions:' : 'Account Transactions:' }}</h2>
+            <div *ngIf="!selectedAccount" id = 'no-selected-account-msg'>Please select an account to see transaction details</div>
+            <div *ngIf="selectedAccount">
+                <p>All incoming and outgoing transactions for this account</p>
+                <div class="transaction" *ngFor="let transaction of transactions">
+                    <div>{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                    <div>{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                    <div>{{ transaction.categories.join(', ') }}</div>
+                </div>
+            </div>
+        </div> 
+        <div id = 'reccuring-transactions' class = 'container-test'>
+            <h2>{{ selectedAccount ? selectedAccount.accountName + ' Account Reccuring Transactions:' : 'Account Reccuring Transactions:' }}</h2>
+            <div *ngIf="!selectedAccount" id = 'no-selected-account-msg'>Please select an account to see transaction details</div>
+            <div *ngIf="selectedAccount">
+                <p>All incoming and outgoing reccuring transactions for this account</p>
+                <div class="transaction" *ngFor="let transaction of reccuringTransactions">
+                    <div>{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                    <div>{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                    <div>{{ transaction.categories.join(', ') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
