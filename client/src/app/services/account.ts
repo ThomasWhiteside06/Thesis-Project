@@ -19,4 +19,12 @@ export class AccountService {
   getUserAccounts(user_id: string): Observable<Account[]> {
     return this.http.get<Account[]>(`${this.apiUrl}user/${user_id}`);
   }
+
+  addAccount(account: Account): Observable<Account> {
+    return this.http.post<Account>(`${this.apiUrl}`, account);
+  }  
+
+  updateAccount(account: Account): Observable<Account> {
+    return this.http.put<Account>(`${this.apiUrl}/${account.id}`, account);
+  }
 }

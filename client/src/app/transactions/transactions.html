@@ -20,8 +20,8 @@
                 <div class="spinner"></div>
             </div>
             <div *ngIf="!loading" id="regular-scroll-box">
-                <div class="transaction" *ngFor="let transaction of regularTransactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
-                    <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }}</div>
+                <div class="transaction" *ngFor="let transaction of displayedRegularTransactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
+                    <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }} <span *ngIf="getOtherAccount(transaction)">({{ getOtherAccount(transaction)?.accountName }})</span></div>
                     <div class="transaction-date">Next: {{ getNextTransactionDate(transaction) | date:'dd MMM yyyy @ hh:mm a' }}</div>
                     <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
                     <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
@@ -30,9 +30,9 @@
         </div>
         <div id = 'upcoming-transactions' class = 'container-test'>
             <h2>Next Payment</h2>
-            <div *ngIf="upcomingTransaction; else noUpcoming">
+            <div *ngIf="selectedAccounts.length > 0 && upcomingTransaction; else noUpcoming">
                 <div class="transaction upcoming-transaction" [ngClass]="{ 'outgoing-transaction': !isIncoming(upcomingTransaction), 'incoming-transaction': isIncoming(upcomingTransaction), 'selected-transaction': selectedTransaction?.id === upcomingTransaction.id}" (click)="selectTransaction(upcomingTransaction)">
-                    <div class="transaction-recipient">{{ userNames[getOtherUserId(upcomingTransaction)] }}</div>
+                    <div class="transaction-recipient">{{ userNames[getOtherUserId(upcomingTransaction)] }} <span *ngIf="getOtherAccount(upcomingTransaction)">({{ getOtherAccount(upcomingTransaction)?.accountName }})</span></div>
                     <div class="transaction-date">{{ getNextTransactionDate(upcomingTransaction) | date:'dd MMM yyyy @ hh:mm a' }}</div>
                     <div class="transaction-categories">Description: {{ upcomingTransaction.categories.join(', ') }}</div>
                     <div class="transaction-amount">-{{ getCurrencySymbol(currency) }}{{ upcomingTransaction.amount }}</div>
@@ -49,9 +49,9 @@
                     <div class="spinner"></div>
                 </div>
                 <div *ngIf="!loading" id = 'scroll-box'>
-                    <ng-container *ngFor="let transaction of transactions">
+                    <ng-container *ngFor="let transaction of displayedTransactions">
                         <div class="transaction" *ngIf="isPastTransaction(transaction)" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'selected-transaction': selectedTransaction?.id === transaction.id}" (click)="selectTransaction(transaction)">
-                            <div class = 'transaction-recipient'>{{ userNames[getOtherUserId(transaction)] }}</div>
+                             <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }} <span *ngIf="getOtherAccount(transaction)">({{ getOtherAccount(transaction)?.accountName }})</span></div>
                             <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
                             <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
                             <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
@@ -148,7 +148,7 @@
             <div id ='details-container' *ngIf="selectedTransaction" [ngClass]="{'incoming-details': isIncoming(selectedTransaction), 'outgoing-details': !isIncoming(selectedTransaction)}">
                 <h1 class = 'title'>Transaction Details:</h1>
                 <h3>Amount: {{ getCurrencySymbol(currency) }}{{ selectedTransaction.amount }}</h3>
-                <h3>{{ isIncoming(selectedTransaction) ? 'From' : 'To' }}: {{ userNames[getOtherUserId(selectedTransaction)] }}</h3>
+                <h3>{{ isIncoming(selectedTransaction) ? 'From' : 'To' }}: {{ userNames[getOtherUserId(selectedTransaction)] }} <span *ngIf="getOtherAccount(selectedTransaction)">({{ getOtherAccount(selectedTransaction)?.accountName }})</span></h3>
                 <h3>Date: {{ selectedTransaction.date | date:'dd MMM yyyy @ hh:mm a' }}</h3>
                 <h3>Description: {{ selectedTransaction.categories.join(', ') }}</h3>
                 <ng-container *ngIf="selectedTransaction?.regular">

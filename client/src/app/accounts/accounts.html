@@ -1,12 +1,12 @@
 <div id = 'accounts-container'>
     <div id = 'accounts-list' class = 'container-test'>
         <h2 id = 'accounts-title' class="title">Accounts:</h2>
+        <button id="add-account-button" type="button" (click)="openAddAccountForm()">+ Add Account</button>
         <div *ngIf="loading" class="loading-spinner">
             <div class="spinner"></div>
         </div>
         <div class="account" *ngFor="let account of accounts" [class.selected-account]="selectedAccount?.id === account.id" (click)="selectAccount(account)">
             <span>{{ account.accountName }}</span>
-            <span> - Balance: {{ getCurrencySymbol(currency) }}{{ account.balance }}</span>
         </div>
     </div>
     <div>
@@ -16,33 +16,100 @@
         <div id = 'middle-col'>
             <div id = 'account-balance-summary'>
                 <h2>Account balance:</h2>
+                <h1>{{ getCurrencySymbol(currency) }}{{ currentBalance | number:'1.2-2' }}</h1>
+                <div class="balance-totals">
+                    <div class="balance-item">
+                        <span>Incoming: </span>
+                        <span class="incoming-text">+{{ getCurrencySymbol(currency) }}{{ totalIncoming | number:'1.2-2' }}</span>
+                    </div>
+                    <div class="balance-item">
+                        <span>Outgoing: </span>
+                        <span class="outgoing-text">-{{ getCurrencySymbol(currency) }}{{ totalOutgoing | number:'1.2-2' }}</span>
+                    </div>
+                </div>
+                <h2 id = 'recurring-title'>Recurring estimates</h2>
+                <div class="recurring-summary">
+                    <div class="recurring-period">
+                        <h4>Weekly</h4> 
+                        <p><span>In: </span> <span class="incoming-text"> +{{ getCurrencySymbol(currency) }}{{ weeklyIncoming | number:'1.2-2' }}</span></p>
+                        <p><span>Out: </span> <span class="outgoing-text"> -{{ getCurrencySymbol(currency) }}{{ weeklyOutgoing | number:'1.2-2' }}</span></p>
+                        <p>Total: {{ getCurrencySymbol(currency) }}{{ weeklyTotal | number:'1.2-2' }}</p>
+                    </div>
+                    <div class="recurring-period">
+                        <h4>Monthly</h4>
+                        <p><span>In: </span> <span class="incoming-text"> +{{ getCurrencySymbol(currency) }}{{ monthlyIncoming | number:'1.2-2' }}</span></p>
+                        <p><span>Out: </span> <span class="outgoing-text"> -{{ getCurrencySymbol(currency) }}{{ monthlyOutgoing | number:'1.2-2' }}</span> </p>
+                        <p>Total: {{ getCurrencySymbol(currency) }}{{ monthlyTotal | number:'1.2-2' }}</p>
+                    </div>
+                    <div class="recurring-period">
+                        <h4>Yearly</h4>
+                        <p><span>In: </span> <span class="incoming-text"> +{{ getCurrencySymbol(currency) }}{{ yearlyIncoming | number:'1.2-2' }}</span></p>
+                        <p><span>Out: </span> <span class="outgoing-text"> -{{ getCurrencySymbol(currency) }}{{ yearlyOutgoing | number:'1.2-2' }}</span></p>
+                        <p>Total: {{ getCurrencySymbol(currency) }}{{ yearlyTotal | number:'1.2-2' }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
     <div id = 'right-col' class = 'container-test'>
         <div id="account-transactions" class = 'container-test'>
-            <h2>{{ selectedAccount ? selectedAccount.accountName + ' Account Transactions:' : 'Account Transactions:' }}</h2>
-            <div *ngIf="!selectedAccount" id = 'no-selected-account-msg'>Please select an account to see transaction details</div>
-            <div *ngIf="selectedAccount">
-                <p>All incoming and outgoing transactions for this account</p>
-                <div class="transaction" *ngFor="let transaction of transactions">
-                    <div>{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
-                    <div>{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
-                    <div>{{ transaction.categories.join(', ') }}</div>
+            <h2 class = 'col-text'>{{ selectedAccount ? selectedAccount.accountName + ' Account Transactions:' : 'Account Transactions:' }}</h2>
+            <div *ngIf="loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div *ngIf="!selectedAccount" class = 'no-selected-account-msg'>Please select an account to see transaction details</div>
+            <div *ngIf="selectedAccount" class="transaction-content">
+                <p class = 'col-text'>All incoming and outgoing transactions for this account</p>
+                <div id="account-transactions-scroll">
+                    <div class="transaction" *ngFor="let transaction of transactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction), 'upcoming-incoming-transaction': isIncoming(transaction) && isUpcoming(transaction), 'upcoming-outgoing-transaction': !isIncoming(transaction) && isUpcoming(transaction)}">
+                        <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }} <span *ngIf="getOtherAccount(transaction)">({{ getOtherAccount(transaction)?.accountName }})</span></div>
+                        <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                        <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
+                        <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                    </div>
                 </div>
             </div>
         </div> 
         <div id = 'reccuring-transactions' class = 'container-test'>
-            <h2>{{ selectedAccount ? selectedAccount.accountName + ' Account Reccuring Transactions:' : 'Account Reccuring Transactions:' }}</h2>
-            <div *ngIf="!selectedAccount" id = 'no-selected-account-msg'>Please select an account to see transaction details</div>
-            <div *ngIf="selectedAccount">
-                <p>All incoming and outgoing reccuring transactions for this account</p>
-                <div class="transaction" *ngFor="let transaction of reccuringTransactions">
-                    <div>{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
-                    <div>{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
-                    <div>{{ transaction.categories.join(', ') }}</div>
+            <h2 class = 'col-text'>{{ selectedAccount ? selectedAccount.accountName + ' Account Reccuring Transactions:' : 'Account Reccuring Transactions:' }}</h2>
+            <div *ngIf="loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            <div *ngIf="!selectedAccount" class = 'no-selected-account-msg'>Please select an account to see transaction details</div>
+            <div *ngIf="selectedAccount" class="transaction-content">
+                <p class = 'col-text'>All incoming and outgoing reccuring transactions for this account</p>
+                <div id="reccuring-transactions-scroll">
+                    <div class="transaction" *ngFor="let transaction of reccuringTransactions" [ngClass]="{'incoming-transaction': isIncoming(transaction), 'outgoing-transaction': !isIncoming(transaction)}">
+                        <div class="transaction-recipient">{{ userNames[getOtherUserId(transaction)] }} <span *ngIf="getOtherAccount(transaction)">({{ getOtherAccount(transaction)?.accountName }})</span></div>
+                        <div class="transaction-date">{{ transaction.date | date:'dd MMM yyyy @ hh:mm a' }}</div>
+                        <div class="transaction-categories">Description: {{ transaction.categories.join(', ') }}</div>
+                        <div class="transaction-amount">{{ isIncoming(transaction) ? '+' : '-' }}{{ getCurrencySymbol(currency) }}{{ transaction.amount }}</div>
+                    </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+
+<div class="modal-backdrop" *ngIf="showAddAccountForm" (click)="closeAddAccountForm()">
+    <div class="add-account-modal" (click)="$event.stopPropagation()">
+        <h2>Add Account</h2>
+        <form (ngSubmit)="addAccount()">
+            <div class="form-group">
+                <label for="account-name">Account Name:</label>
+                <input type="text" id="account-name" name="accountName" [(ngModel)]="newAccountName" required>
+            </div>
+            <div class="form-group">
+                <label for="account-type">Account Type:</label>
+                <select id="account-type" name="accountType" [(ngModel)]="newAccountType" required>
+                    <option *ngFor="let type of accountTypes" [value]="type">{{ type | titlecase }}</option>
+                </select>
+            </div>
+            <div class="modal-buttons">
+                <button type="button" (click)="closeAddAccountForm()">Cancel</button>
+                <button type="submit">Add Account</button>
+            </div>
+        </form>
     </div>
 </div>
