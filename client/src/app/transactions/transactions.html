@@ -9,7 +9,6 @@
         </div>
         <div class="account" *ngFor="let account of accounts" [class.selected-account]="selectedAccounts.includes(account.id)" (click)="toggleAccount(account.id)">
             <span>{{ account.accountName }}</span>
-            <span> - Balance: {{ getCurrencySymbol(currency) }}{{ account.balance }}</span>
         </div>
     </div>
     <div id = 'middle-col'>
