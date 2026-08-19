@@ -2,6 +2,7 @@ import { Component, signal, inject } from '@angular/core';
 import { Router } from '@angular/router';
 
 import {  loginService } from './auth.service';
+import { AuthStateService } from './AuthState.service';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ import {  loginService } from './auth.service';
           type="email"
           [value]="email()"
           (input)="onEmailInput($event)"
+          [disabled]="this.auth.globalUser() !== null"
           required
         />
 
@@ -26,6 +28,7 @@ import {  loginService } from './auth.service';
           type="password"
           [value]="password()"
           (input)="onPasswordInput($event)"
+          [disabled]="this.auth.globalUser() !== null"
           required
         />
 
@@ -43,6 +46,7 @@ import {  loginService } from './auth.service';
     </div>
   `,
   styles: [`
+
     .login-container {
       width: 800px;
       min-height: 600px;
@@ -88,11 +92,24 @@ import {  loginService } from './auth.service';
       font-weight: bold;
       font-size: 1.1rem;
     }
+
+  input:disabled {
+  background: #e0e0e0;
+  color: #777;
+  border-color: #bbb;
+  cursor: not-allowed;
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
   `]
 })
 export class AppLogin{
-  private readonly auth = inject(loginService);
-  private readonly router = inject(Router);
+  auth = inject(AuthStateService);
+  
 
   email = signal('');
   password = signal('');
@@ -112,22 +129,11 @@ export class AppLogin{
   
   onLogin(event: Event) {
     event.preventDefault();
-
-    this.auth.login(this.email(), this.password()).subscribe({
-      next: () => {
-        this.auth.getMe().subscribe({
-          next: () => this.router.navigateByUrl('/budget'),
-          error: () => this.error.set('Failed to verify login')
-        });
-      },
-      error: () => this.error.set('Invalid email or password')
-    });
+    this.auth.login(this.email(),this.password())
   }
 
   
   onLogout() {
-    this.auth.logout().subscribe(() => {
-      this.router.navigateByUrl('/login');
-    });
+    this.auth.logout()
   }
 }

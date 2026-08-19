@@ -1,5 +1,9 @@
 <div id = 'nav-bar-container'>
-    <h1 id = 'title' routerLink = '/'>BeginnerBudget</h1>
+    @if(userName() !== null) {
+    <h1 id = 'title' routerLink = '/'>{{userName()}}</h1>
+    }@else {
+        <h1 id = 'title' routerLink = '/'>Basic Budget</h1>
+    }
     <div id = 'link_container'>
         <h2 id = 'budget-link' class = 'page-link' routerLink = '/budget'>Budget</h2>
         <h2 id = 'transactions-link' class = 'page-link' routerLink = '/transactions'>Transactions</h2>
