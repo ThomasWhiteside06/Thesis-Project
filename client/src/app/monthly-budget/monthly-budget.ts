@@ -93,7 +93,6 @@ export class MonthlyBudget implements OnInit {
     });
   }
 
-
   calculateBudget(): void {
     this.totalIncome = 0;
     this.totalExpenses = 0;
@@ -105,15 +104,16 @@ export class MonthlyBudget implements OnInit {
     this.transactions.forEach(transaction => {
       if (transaction.regular) {
         const occurrences = this.getOccurrencesInPeriod(transaction);
-        occurrences.forEach(date => {periodTransactions.push({...transaction, date: date});});
+        occurrences.forEach(date => {if (!this.occurrenceExists(transaction, date)) {periodTransactions.push({...transaction, date: date});}});
       } else {
         const date = new Date(transaction.date);
         if (date >= periodStart && date <= periodEnd) {periodTransactions.push(transaction)}
       }
     });
-    periodTransactions.forEach(transaction => {if (this.isIncoming(transaction)) {this.totalIncome += transaction.amount;}});
+    const accountIds = new Set(this.accounts.map(account => account.id));
     periodTransactions.forEach(transaction => {
-      if (!this.isIncoming(transaction)) {
+      if (accountIds.has(transaction.recipientId) && !this.isInternalTransfer(transaction)) {this.totalIncome += transaction.amount;}
+      if (accountIds.has(transaction.senderId)) {
         this.totalExpenses += transaction.amount;
         transaction.categories.forEach(categoryName => {
           let category = this.categories.find(c => c.name === categoryName);
@@ -131,13 +131,14 @@ export class MonthlyBudget implements OnInit {
         });
       }
     });
-    this.categories.forEach(category => {if (this.totalIncome > 0) {category.percentage = (category.amount / this.totalIncome) * 100;} else {category.percentage = 0;}});
+    this.categories.forEach(category => {category.percentage = this.totalIncome > 0 ? (category.amount / this.totalIncome) * 100 : 0;});
     this.remaining = this.totalIncome - this.totalExpenses;
     if (this.remaining > 0) {
       this.categories.push({
         name: 'Remaining',
         amount: this.remaining,
-        percentage: this.totalIncome > 0 ? (this.remaining / this.totalIncome) * 100  : 0, transactions: []
+        percentage: this.totalIncome > 0 ? (this.remaining / this.totalIncome) * 100 : 0,
+        transactions: []
       });
     }
     this.categories.sort((a, b) => {
@@ -149,7 +150,7 @@ export class MonthlyBudget implements OnInit {
 
   isIncoming(transaction: Transaction): boolean {
     const accountIds = new Set(this.accounts.map(account => account.id));
-    return accountIds.has(transaction.recipientId);
+    return accountIds.has(transaction.recipientId) && !this.isInternalTransfer(transaction);
   }
 
   getOccurrencesInPeriod(transaction: Transaction): Date[] {
@@ -211,5 +212,14 @@ export class MonthlyBudget implements OnInit {
   setBudgetPeriod(period: 'monthly' | 'yearly'): void {
     this.budgetPeriod = period;
     this.calculateBudget();
+  }
+
+  isInternalTransfer(transaction: Transaction): boolean {
+    const accountIds = new Set(this.accounts.map(account => account.id));
+    return (accountIds.has(transaction.senderId) && accountIds.has(transaction.recipientId));
+  }
+
+  occurrenceExists(recurringTransaction: Transaction, occurrenceDate: Date): boolean {
+    return this.transactions.some(existing => !existing.regular && existing.senderId === recurringTransaction.senderId && existing.recipientId === recurringTransaction.recipientId && existing.amount === recurringTransaction.amount && new Date(existing.date).getTime() === occurrenceDate.getTime());
   }
 }

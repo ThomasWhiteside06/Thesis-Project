@@ -31,6 +31,16 @@ export class Transactions {
   userNames: { [id: string]: string } = {};
   //creating new transaction
   newRecipientId: string = '';
+  recipientSearch: string = '';
+  recipientDropdownOpen: boolean = false;
+  recipientAccounts: {
+    account: Account;
+    name: string;
+  }[] = [];
+  filteredRecipientAccounts: {
+    account: Account;
+    name: string;
+  }[] = [];
   newAmount: number = 0;
   newCategories: string = '';
   newDate: string = '';
@@ -99,6 +109,7 @@ export class Transactions {
           forkJoin(otherUserIds.map(id => this.userService.getUser(id))).subscribe({
             next: (users) => {
               users.forEach(user => { this.userNames[user.id] = `${user.firstName} ${user.lastname}`;});
+              this.buildRecipientList();
               this.upcomingTransaction = this.getNextOutgoingTransaction();
               this.loading = false;
               this.cdr.detectChanges();
@@ -212,11 +223,14 @@ export class Transactions {
         });
         this.upcomingTransaction = this.getNextOutgoingTransaction();
         this.newRecipientId = '';
+        this.recipientSearch = '';
+        this.recipientDropdownOpen = false;
         this.newAmount = 0;
         this.newCategories = '';
         this.newDate = '';
         this.newRegular = false;
         this.newFrequency = 'once';
+        this.checkRecurringTransactions();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -373,5 +387,26 @@ export class Transactions {
         date.setFullYear(date.getFullYear() + 1);
         break;
     }
+  }
+
+  buildRecipientList(): void {
+    const myAccountIds = new Set(this.accounts.map(account => account.id));
+    this.recipientAccounts = this.allAccounts.map(account => ({account: account, name: this.userNames[account.userId] ?? 'Unknown User'}));
+    this.filteredRecipientAccounts = [...this.recipientAccounts];
+  }
+
+  filterRecipients(): void {
+    const search = this.recipientSearch.toLowerCase().trim();
+    if (!search) {
+      this.filteredRecipientAccounts = [...this.recipientAccounts];
+      return;
+    }
+    this.filteredRecipientAccounts = this.recipientAccounts.filter(item => item.name.toLowerCase().includes(search) || item.account.accountName.toLowerCase().includes(search));
+  }
+
+  selectRecipient(item: { account: Account; name: string }): void {
+    this.newRecipientId = item.account.id;
+    this.recipientSearch = `${item.name} - ${item.account.accountName}`;
+    this.recipientDropdownOpen = false;
   }
 }

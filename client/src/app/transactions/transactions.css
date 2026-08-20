@@ -417,6 +417,50 @@ div {
     translate: -20px -110px;
 }
 
+.recipient-form-group {
+    position: relative;
+}
+
+.recipient-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    max-height: 200px;
+    overflow-y: auto;
+
+    background-color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    z-index: 100;
+}
+
+.recipient-option {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recipient-option:hover {
+    background-color: var(--tertiary);
+}
+
+.selected-recipient {
+    background-color: var(--secondary);
+}
+
+.recipient-account {
+    font-weight: bold;
+}
+
+.recipient-name {
+    font-weight: normal;
+}
+
 
 
 
