@@ -2,14 +2,42 @@
     <div *ngIf="loading" class="loading-spinner"><div class="spinner"></div></div>
     <div *ngIf="!loading" id="budget-content">
         <div id="budget-left">
-            <div class="budget-period-selector">
-                <button [class.active]="budgetPeriod === 'monthly'" (click)="setBudgetPeriod('monthly')">Monthly Budget</button>
-                <button [class.active]="budgetPeriod === 'yearly'" (click)="setBudgetPeriod('yearly')">Yearly Budget</button>
-            </div>
-            <div id="budget-chart">
-                <!-- CHART GOES HERE -->
-                 <h1 id = 'CHART-PLACEHOLDER'>CHART GOES HERE</h1>
-            </div>
+            <budget-tab-group #tabGroup (tabActivated)="onTabActivated($event)">
+
+                <div tab-buttons class="budget-period-selector">
+                    <button 
+                    [class.active]="budgetPeriod === 'monthly'" 
+                    (click)="tabGroup.activate('Monthly');
+                    setBudgetPeriod('monthly')"> 
+                    Monthly Budget
+                    </button>
+                    <button 
+                    
+                    [class.active]="budgetPeriod === 'yearly'" 
+                    (click)="tabGroup.activate('Yearly');
+                    setBudgetPeriod('yearly')">
+                    Yearly Budget
+                </button>
+             </div>
+             <budget-tab label="Monthly">
+                
+                 <div class="budget-chart">
+                     <!-- CHART GOES HERE -->
+                     <h1 id = 'CHART-PLACEHOLDER'></h1>
+                    </div>
+                </budget-tab>
+               
+                <budget-tab label="Yearly">
+
+                 <div class="budget-chart">
+                     <!-- CHART GOES HERE -->
+                     <h1 id = 'CHART-PLACEHOLDER'></h1>
+                    </div>
+                </budget-tab>
+            </budget-tab-group>
+           
+           
+           
             <div id="budget-summary">
                 <div class="income-summary">
                     <span>Total Income: </span>

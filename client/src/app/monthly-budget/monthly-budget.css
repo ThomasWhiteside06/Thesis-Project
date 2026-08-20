@@ -53,7 +53,7 @@
     overflow: hidden;
 }
 
-#budget-chart {
+.budget-chart {
     min-height: 350px;
     border: 1px solid var(--border);
     border-radius: 10px;

@@ -7,6 +7,10 @@ import { AuthService } from '../services/auth';
 import { TransactionService } from '../services/transaction';
 import { forkJoin } from 'rxjs';
 import { ChangeDetectorRef } from '@angular/core';
+import { Tab } from '../budget/tabs/tabs';
+import { TabGroup } from '../budget/tabs/tab-group';
+import * as d3 from 'd3';
+
 
 interface BudgetCategory {
   name: string;
@@ -17,7 +21,7 @@ interface BudgetCategory {
 
 @Component({
   selector: 'app-monthly-budget',
-  imports: [CommonModule],
+  imports: [CommonModule, TabGroup, Tab],
   templateUrl: './monthly-budget.html',
   styleUrl: './monthly-budget.css',
 })
@@ -145,6 +149,10 @@ export class MonthlyBudget implements OnInit {
       if (b.name === 'Remaining') return -1;
       return b.amount - a.amount;
     });
+    
+  this.renderActiveChart();
+
+
   }
 
   isIncoming(transaction: Transaction): boolean {
@@ -211,5 +219,216 @@ export class MonthlyBudget implements OnInit {
   setBudgetPeriod(period: 'monthly' | 'yearly'): void {
     this.budgetPeriod = period;
     this.calculateBudget();
+    this.renderActiveChart();
   }
+
+
+
+private renderMonthlyChart(container: HTMLElement): void {
+  d3.select(container).selectAll('*').remove();
+
+  const width = 800;
+  const height = 450;
+  const margin = { top: 40, right: 120, bottom: 40, left: 40 };
+
+  const data: BudgetCategory[] = this.categories.filter(
+    (c: BudgetCategory) => c.name !== 'Remaining'
+  );
+
+  const total = d3.sum(data, d => d.amount);
+
+  const svg = d3
+    .select(container)
+    .append('svg')
+    .attr('width', width + margin.right)
+    .attr('height', height)
+    .append('g')
+    .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+
+  const x = d3
+    .scaleBand<string>()
+    .domain(data.map(d => d.name))
+    .range([0, innerWidth])
+    .padding(0.2);
+
+  const y = d3
+    .scaleLinear()
+    .domain([0, d3.max(data, d => d.amount)!])
+    .range([innerHeight, 0]);
+
+  const color = d3
+    .scaleOrdinal<string>()
+    .domain(data.map(d => d.name))
+    .range(d3.schemeCategory10);
+
+  
+  svg.append('text')
+    .attr('x', innerWidth / 2)
+    .attr('y', -10)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '16px')
+    .style('font-weight', '600')
+    .text('Monthly Budget Breakdown');
+
+  
+  svg.append('g')
+    .attr('transform', `translate(0, ${innerHeight})`)
+    .call(d3.axisBottom(x));
+
+  svg.append('g').call(d3.axisLeft(y));
+
+  
+  svg
+    .selectAll('rect')
+    .data(data)
+    .enter()
+    .append('rect')
+    .attr('x', d => x(d.name)!)
+    .attr('y', d => y(d.amount))
+    .attr('width', x.bandwidth())
+    .attr('height', d => innerHeight - y(d.amount))
+    .attr('fill', d => color(d.name));
+
+  
+  svg
+    .selectAll('text.percent')
+    .data(data)
+    .enter()
+    .append('text')
+    .attr('class', 'percent')
+    .attr('x', d => x(d.name)! + x.bandwidth() / 2)
+    .attr('y', d => y(d.amount) - 5)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .style('font-weight', '600')
+    .text(d => `${((d.amount / total) * 100).toFixed(1)}%`);
+
+  
+  const legend = svg
+    .append('g')
+    .attr('transform', `translate(${innerWidth + 20}, 0)`);
+
+  data.forEach((d, i) => {
+    const g = legend.append('g').attr('transform', `translate(0, ${i * 20})`);
+
+    g.append('rect')
+      .attr('width', 12)
+      .attr('height', 12)
+      .attr('fill', color(d.name));
+
+    g.append('text')
+      .attr('x', 18)
+      .attr('y', 10)
+      .style('font-size', '12px')
+      .text(`${d.name} (${((d.amount / total) * 100).toFixed(1)}%)`);
+  });
+}
+
+  private renderYearlyChart(container: HTMLElement): void {
+  d3.select(container).selectAll('*').remove();
+
+  const width = 800;
+  const height = 450;
+  const radius = Math.min(width, height) / 2;
+
+  const data: BudgetCategory[] = this.categories;
+  const total = d3.sum(data, d => d.amount);
+
+  const svg = d3
+    .select(container)
+    .append('svg')
+    .attr('width', width + 140)
+    .attr('height', height)
+    .append('g')
+    .attr('transform', `translate(${width / 2}, ${height / 2})`);
+
+  const pie = d3.pie<BudgetCategory>().value(d => d.amount);
+
+  const arc = d3
+    .arc<d3.PieArcDatum<BudgetCategory>>()
+    .innerRadius(radius * 0.5)
+    .outerRadius(radius);
+
+  const color = d3
+    .scaleOrdinal<string>()
+    .domain(data.map(d => d.name))
+    .range(d3.schemeCategory10);
+
+  
+  d3.select(container)
+    .select('svg')
+    .append('text')
+    .attr('x', 80)
+    .attr('y', 30)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '20px')
+    .style('font-weight', '600')
+    .text('Yearly Budget');
+
+  
+  svg
+    .selectAll('path')
+    .data(pie(data))
+    .enter()
+    .append('path')
+    .attr('d', arc)
+    .attr('fill', d => color(d.data.name));
+
+  
+  svg
+    .selectAll('text.slice-label')
+    .data(pie(data))
+    .enter()
+    .append('text')
+    .attr('class', 'slice-label')
+    .attr('transform', d => `translate(${arc.centroid(d)})`)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '12px')
+    .style('font-weight', '600')
+    .text(d => `${((d.data.amount / total) * 100).toFixed(1)}%`);
+
+  
+  const legend = d3
+    .select(container)
+    .select('svg')
+    .append('g')
+    .attr('transform', `translate(${width + 20}, 40)`);
+
+  data.forEach((d, i) => {
+    const g = legend.append('g').attr('transform', `translate(0, ${i * 20})`);
+
+    g.append('rect')
+      .attr('width', 12)
+      .attr('height', 12)
+      .attr('fill', color(d.name));
+
+    g.append('text')
+      .attr('x', 18)
+      .attr('y', 10)
+      .style('font-size', '12px')
+      .text(`${d.name} (${((d.amount / total) * 100).toFixed(1)}%)`);
+  });
+}
+
+  private renderActiveChart(): void {
+  const container = document.querySelector<HTMLElement>('.budget-chart');
+  if (!container) return;
+
+  container.innerHTML = ''; 
+
+  if (this.budgetPeriod === 'monthly') {
+    this.renderMonthlyChart(container);
+  } else {
+    this.renderYearlyChart(container);
+  }
+}
+
+onTabActivated(label: string): void {
+  this.renderActiveChart();
+}
+
+
 }
