@@ -6,9 +6,11 @@ import { Injectable } from '@angular/core';
 export class ThemeService {
   darkMode: boolean;
   colourblindMode: boolean;
+  dancershark: boolean;
   constructor() {
     this.darkMode = localStorage.getItem('darkMode') === 'true';
     this.colourblindMode = localStorage.getItem('colourblindMode') === 'true';
+    this.dancershark = false;
     this.applyTheme();
   }
 
@@ -24,8 +26,14 @@ export class ThemeService {
     this.applyTheme();
   }
 
+  toggleDancershark(): void {
+    this.dancershark = !this.dancershark;
+    this.applyTheme();
+  }
+
   private applyTheme(): void {
     document.body.classList.toggle('dark-mode', this.darkMode);
     document.body.classList.toggle('colourblind-mode', this.colourblindMode);
+    document.body.classList.toggle('dancershark', this.dancershark);
   }
 }

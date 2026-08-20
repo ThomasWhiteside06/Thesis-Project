@@ -70,15 +70,25 @@
                         </label>
                         <span [class.active]="newIncoming">Incoming</span>
                     </div>
-                    <div class="form-group">
-                        <label for="recipient">{{ newIncoming ? 'Sender:' : 'Recipient:' }}</label>
+                    <div class="form-group recipient-form-group">
+                        <label for="recipient"> {{ newIncoming ? 'Sender:' : 'Recipient:' }}</label>
                         <input
                             type="text"
                             id="recipient"
                             name="recipient"
-                            [(ngModel)]="newRecipientId"
+                            [(ngModel)]="recipientSearch"
+                            (input)="filterRecipients()"
+                            (focus)="recipientDropdownOpen = true"
+                            (blur)="recipientDropdownOpen = false"
+                            autocomplete="off"
                             required
                         >
+                        <div class="recipient-dropdown"  *ngIf="recipientDropdownOpen && filteredRecipientAccounts.length > 0">
+                            <div class="recipient-option" [class.selected-recipient]="item.account.id === newRecipientId" *ngFor="let item of filteredRecipientAccounts" (mousedown)="selectRecipient(item)">
+                                <span class="recipient-account">{{ item.account.accountName }}</span>
+                                <span class="recipient-name">{{ item.name }}</span>     
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="amount">Amount:</label>

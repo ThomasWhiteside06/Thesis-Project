@@ -3,6 +3,7 @@ body {
     height: 100%;
     margin: 0;
     overflow: hidden;
+    background-color: var(--nav-bar);
 }
 
 :root {
@@ -13,7 +14,7 @@ body {
   --upcoming-incoming-glow: #B7FF00;
   --upcoming-outgoing-glow: #FF8C00;
 /*Light Mode*/
-  --nav-bar: white;
+  --nav-bar: rgb(227, 227, 206);
   --primary: white;
   --text: black;
   --border: rgb(134, 131, 131);
@@ -34,5 +35,15 @@ body {
   --upcoming-outgoing-glow: #CC79A7;
   --secondary: #0072B2;
   --tertiary: #56B4E9;
+}
+
+.dancershark {
+  --nav-bar: rgb(52, 144, 207);
+  --primary: white;
+  --border: white;
+  --text: black;
+  --secondary: gray;
+  --tertiary: black;
+  --trans-background: gray;
 }
 

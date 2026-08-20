@@ -9,11 +9,11 @@
             <span>{{ account.accountName }}</span>
         </div>
     </div>
-    <div>
-        <div>
+    <div id = 'middle-col'>
+        <div id = 'accounts-title-div'>
             <h1 id = 'accounts-page-title'>Accounts</h1>
         </div>
-        <div id = 'middle-col'>
+        <div>
             <div id = 'account-balance-summary'>
                 <h2>Account balance:</h2>
                 <h1>{{ getCurrencySymbol(currency) }}{{ currentBalance | number:'1.2-2' }}</h1>

@@ -40,6 +40,10 @@ export class Settings {
     this.themeService.toggleColourblind();
   }
 
+  toggleDancershark(): void {
+    this.themeService.toggleDancershark();
+  }
+
   submitForm(): void {
     const updatedUser:UpdateUser = {
         email: this.email,

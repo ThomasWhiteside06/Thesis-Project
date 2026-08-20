@@ -1,14 +1,20 @@
 #transactions-container {
     margin-top: 0;
-    background-color: var(--primary);
+    background-color: var(--nav-bar);
     height: calc(100vh - 100px);
     min-height: 814px;
     box-sizing: border-box;
     color: var(--text);
-    padding-top: 20px;
+    padding: 20px;
     display: grid;
-    grid-template-columns: 20% 30% 50%;
+    grid-template-columns: 15% 30% minmax(0, 1fr);
     grid-template-rows: 1fr;
+    gap: 20px;
+}
+
+div {
+    background-color: var(--primary);
+    border-radius: 10px;
 }
 
 .title {
@@ -44,9 +50,11 @@
 
 .transaction-recipient {
     font-size: x-large;
+    background-color: var(--trans-background);
 }
 
 .transaction-amount {
+    background-color: var(--trans-background);
     font-size: x-large;
     margin-left: auto;
 }
@@ -60,12 +68,14 @@
 }
 
 .transaction-date {
+    background-color: var(--trans-background);
    position: absolute;
     bottom: 10px;
     right: 10px;
 }
 
 .transaction-categories {
+    background-color: var(--trans-background);
     position: absolute;
     bottom: 10px;
     left: 10px;
@@ -87,6 +97,7 @@
     background-color: var(--primary);
     transition: background-color 0.2s ease;
     margin: 0;
+    border-radius: 0;
 }
 
 .account:hover {
@@ -107,6 +118,7 @@
     height: 100%;
     min-height: 0;
     box-sizing: border-box;
+    background-color: var(--nav-bar);
 }
 
 #transaction-details {
@@ -115,6 +127,7 @@
     box-sizing: border-box;
     text-align: center;
     overflow-y: hidden;
+    border-radius: 0px 0px 10px 10px;
 }
 
 #details-container {
@@ -162,6 +175,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    border-radius: 0;
 }
 
 #regular-scroll-box {
@@ -193,6 +207,7 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    border-radius: 10px 0 0 0;
 }
 
 
@@ -200,6 +215,7 @@
     height: 20%;
     padding: 0 20px;
     box-sizing: border-box;
+    border-radius: 0 0 10px 10px;
 }
 
 .container-test {
@@ -222,9 +238,11 @@
     font-size: 2.5rem;
     line-height: 1.1;
     text-align: center;
-    color: var(--tertiary);
-    -webkit-text-stroke: 1px var(--secondary);
     border: 1px solid var(--border);
+    background-color: var(--primary);
+    border-radius: 10px 10px 0 0;
+    color: var(--secondary);
+    text-shadow: 0 0 3px var(--tertiary);
 }
 
 #add-transactions {
@@ -235,6 +253,7 @@
     color: var(--text);
     overflow-y: auto;
     scrollbar-color: var(--secondary) var(--primary);
+    border-radius: 0 10px 0 0;
 }
 
 #add-transactions h2 {
@@ -386,7 +405,7 @@
 .delete-button {
     position: absolute;
     bottom: 15px;
-    right: 15px;
+    right: 30px;
     width: 40px;
     height: 40px;
     border: none;
@@ -396,6 +415,50 @@
     opacity: 0.7;
     transition: opacity 0.2s, transform 0.2s;
     translate: -20px -110px;
+}
+
+.recipient-form-group {
+    position: relative;
+}
+
+.recipient-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+
+    max-height: 200px;
+    overflow-y: auto;
+
+    background-color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+
+    z-index: 100;
+}
+
+.recipient-option {
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recipient-option:hover {
+    background-color: var(--tertiary);
+}
+
+.selected-recipient {
+    background-color: var(--secondary);
+}
+
+.recipient-account {
+    font-weight: bold;
+}
+
+.recipient-name {
+    font-weight: normal;
 }
 
 

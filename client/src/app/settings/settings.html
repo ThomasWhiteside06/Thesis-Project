@@ -1,4 +1,10 @@
 <div id = 'page'>
+    <img id = 'dancershark'
+        src="assets/dancershark.gif"
+        alt="Dancer Shark"
+        class="dancershark-gif"
+        (click)="toggleDancershark()"
+        >
     <h1 id = 'title'>Settings:</h1>
     <div id = 'settings-container'>
         <div class = 'setting-container' id = 'theme-container'>
@@ -6,29 +12,7 @@
             <button id = 'theme-button' (click) = 'toggleTheme()'>{{ themeService.darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode' }}</button>
             <button id = 'colourblind-button' (click) = 'toggleColourblind()'>{{ themeService.colourblindMode ? 'Turn Off Colourblind Mode' : 'Turn On Colourblind Mode' }}</button>
         </div>
-        <div class = 'setting-container' id = 'update-container'>
-            <h2 class = 'subtitle'>Update Details:</h2>
-            <form #form = 'ngForm' (ngSubmit) = 'submitForm()'>
-                <div class = 'form-group'>
-                    <label for = 'email'>Email:</label>
-                    <input type = 'email' name = 'email' [(ngModel)] = 'email' placeholder = 'Enter new email...' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'password'>Password:</label>
-                    <input type = 'password' name = 'password' [(ngModel)] = 'password' placeholder = 'Enter new password...' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'forename'>Forename:</label>
-                    <input type = 'string' name = 'forename' [(ngModel)] = 'forename' placeholder = 'Enter new forename...' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'surname'>Surname:</label>
-                    <input type = 'string' name = 'surname' [(ngModel)] = 'surname' placeholder = 'Enter new surname...' required>
-                </div>
-                <button type = 'submit'>Submit</button>
-            </form>
-        </div>
-        <div id = 'account-settings'>
+        <div id = 'left-container'>
             <div class = 'setting-container' id = 'currency-container'>
                 <h2 class = 'subtitle'>Currency:</h2>
                 <select [(ngModel)] = 'selectedCurrency'>
@@ -39,31 +23,55 @@
                     </option>
                 </select>
             </div>
+            <div class = 'setting-container' id = 'update-container'>
+                <h2 class = 'subtitle'>Update Details:</h2>
+                <form #form = 'ngForm' (ngSubmit) = 'submitForm()'>
+                    <div class = 'form-group'>
+                        <label for = 'email'>Email:</label>
+                        <input type = 'email' name = 'email' [(ngModel)] = 'email' placeholder = 'Enter new email...' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'password'>Password:</label>
+                        <input type = 'password' name = 'password' [(ngModel)] = 'password' placeholder = 'Enter new password...' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'forename'>Forename:</label>
+                        <input type = 'string' name = 'forename' [(ngModel)] = 'forename' placeholder = 'Enter new forename...' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'surname'>Surname:</label>
+                        <input type = 'string' name = 'surname' [(ngModel)] = 'surname' placeholder = 'Enter new surname...' required>
+                    </div>
+                    <button type = 'submit'>Submit</button>
+                </form>
+            </div>
+        </div>
+        <div id = 'temp-create-container'>
             <button id = 'delete-user-button' (click) = 'deleteUser()'>Delete User</button>
+            <!-- Add a user - will be moved -->
+            <div class = 'setting-container'>
+                <h2 class = 'subtitle'>Create User:</h2>
+                <form (ngSubmit) = 'addUser()'>
+                    <div class = 'form-group'>
+                        <label for = 'email'>Email:</label>
+                        <input type = 'email' name = 'newEmail' [(ngModel)] = 'newEmail' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'password'>Password:</label>
+                        <input type = 'password' name = 'newPassword' [(ngModel)] = 'newPassword' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'forename'>Forename:</label>
+                        <input type = 'forename' name = 'newForename' [(ngModel)] = 'newForename' required>
+                    </div>
+                    <div class = 'form-group'>
+                        <label for = 'surname'>Surname:</label>
+                        <input type = 'surname' name = 'newSurname' [(ngModel)] = 'newSurname' required>
+                    </div>
+                    <button type = 'submit'>Submit</button>
+                </form>
+            </div>
+            <!-- End of add a user -->
         </div>
-        <!-- Add a user - will be moved -->
-        <div class = 'setting-container' id = 'temp-create-container'>
-            <h2 class = 'subtitle'>Create User:</h2>
-            <form (ngSubmit) = 'addUser()'>
-                <div class = 'form-group'>
-                    <label for = 'email'>Email:</label>
-                    <input type = 'email' name = 'newEmail' [(ngModel)] = 'newEmail' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'password'>Password:</label>
-                    <input type = 'password' name = 'newPassword' [(ngModel)] = 'newPassword' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'forename'>Forename:</label>
-                    <input type = 'forename' name = 'newForename' [(ngModel)] = 'newForename' required>
-                </div>
-                <div class = 'form-group'>
-                    <label for = 'surname'>Surname:</label>
-                    <input type = 'surname' name = 'newSurname' [(ngModel)] = 'newSurname' required>
-                </div>
-                <button type = 'submit'>Submit</button>
-            </form>
-        </div>
-        <!-- End of add a user -->
     </div>
 </div>

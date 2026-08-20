@@ -31,6 +31,16 @@ export class Transactions {
   userNames: { [id: string]: string } = {};
   //creating new transaction
   newRecipientId: string = '';
+  recipientSearch: string = '';
+  recipientDropdownOpen: boolean = false;
+  recipientAccounts: {
+    account: Account;
+    name: string;
+  }[] = [];
+  filteredRecipientAccounts: {
+    account: Account;
+    name: string;
+  }[] = [];
   newAmount: number = 0;
   newCategories: string = '';
   newDate: string = '';
@@ -99,6 +109,7 @@ export class Transactions {
           forkJoin(otherUserIds.map(id => this.userService.getUser(id))).subscribe({
             next: (users) => {
               users.forEach(user => { this.userNames[user.id] = `${user.firstName} ${user.lastname}`;});
+              this.buildRecipientList();
               this.upcomingTransaction = this.getNextOutgoingTransaction();
               this.loading = false;
               this.cdr.detectChanges();
@@ -212,11 +223,14 @@ export class Transactions {
         });
         this.upcomingTransaction = this.getNextOutgoingTransaction();
         this.newRecipientId = '';
+        this.recipientSearch = '';
+        this.recipientDropdownOpen = false;
         this.newAmount = 0;
         this.newCategories = '';
         this.newDate = '';
         this.newRegular = false;
         this.newFrequency = 'once';
+        this.checkRecurringTransactions();
         this.cdr.detectChanges();
       },
       error: (error) => {
@@ -239,19 +253,40 @@ export class Transactions {
 
   checkRecurringTransactions(): void {
     const now = new Date();
+
     this.regularTransactions.forEach(transaction => {
-        const nextDate = this.getNextOccurrence(transaction);
-        if (!nextDate || nextDate > now) {return;}
-        const alreadyExists = this.transactions.some(existing =>
-            existing.id !== transaction.id &&
-            existing.senderId === transaction.senderId &&
-            existing.recipientId === transaction.recipientId &&
-            existing.amount === transaction.amount &&
-            existing.date.getTime() === nextDate.getTime()
+      if (!transaction.regular || !transaction.frequency) {
+        return;
+      }
+
+      const startDate = new Date(transaction.start ?? transaction.date);
+      let occurrenceDate = new Date(startDate);
+
+      while (occurrenceDate <= now) {
+        const occurrenceAlreadyExists = this.transactions.some(existing =>
+          existing.senderId === transaction.senderId &&
+          existing.recipientId === transaction.recipientId &&
+          existing.amount === transaction.amount &&
+          new Date(existing.date).getTime() === occurrenceDate.getTime()
         );
-        if (!alreadyExists) {this.createRecurringOccurrence(transaction);}
+
+        if (
+          !occurrenceAlreadyExists &&
+          occurrenceDate.getTime() !== startDate.getTime()
+        ) {
+          this.createRecurringOccurrence(
+            transaction,
+            new Date(occurrenceDate)
+          );
+        }
+
+        this.advanceOccurrence(occurrenceDate, transaction.frequency);
+      }
     });
-}
+
+    this.updateDisplayedTransactions();
+    this.cdr.detectChanges();
+  }
 
   getNextOccurrence(transaction: Transaction): Date | null {
     if (!transaction.regular || !transaction.frequency) {return null}
@@ -275,17 +310,22 @@ export class Transactions {
     return nextDate;
   }
 
-  createRecurringOccurrence(transaction: Transaction): void {
-    const nextDate = this.getNextOccurrence(transaction);
-    if (!nextDate) {return}
+  createRecurringOccurrence(transaction: Transaction, occurrenceDate: Date): void {
     const newTransaction: Transaction = {
       ...transaction,
       id: undefined,
-      date: nextDate,
+      date: new Date(occurrenceDate),
+      regular: false,
+      frequency: 'once'
     };
-    this.transactions.push(newTransaction);
-    this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    this.cdr.detectChanges();
+    this.transactionService.addTransaction(newTransaction).subscribe({
+      next: (savedTransaction) => {
+        this.transactions.push(savedTransaction);
+        this.transactions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+        this.updateDisplayedTransactions();
+        this.cdr.detectChanges();
+      }, error: (error) => {console.error('Failed to save recurring occurrence:', error);}
+    });
   }
 
   isPastTransaction(transaction: Transaction): boolean {
@@ -330,5 +370,43 @@ export class Transactions {
     const myAccountIds = new Set(this.accounts.map(account => account.id));
     const otherAccountId = myAccountIds.has(transaction.senderId) ? transaction.recipientId : transaction.senderId;
     return this.allAccounts.find(account => account.id === otherAccountId);
+  }
+
+  advanceOccurrence(date: Date, frequency: string): void {
+    switch (frequency.toLowerCase()) {
+      case 'daily':
+        date.setDate(date.getDate() + 1);
+        break;
+      case 'weekly':
+        date.setDate(date.getDate() + 7);
+        break
+      case 'monthly':
+        date.setMonth(date.getMonth() + 1);
+        break;
+      case 'yearly':
+        date.setFullYear(date.getFullYear() + 1);
+        break;
+    }
+  }
+
+  buildRecipientList(): void {
+    this.recipientAccounts = this.allAccounts.map(account => ({account: account, name: this.userNames[account.userId] ?? 'Unknown User'}));
+    this.filterRecipients();
+  }
+
+  filterRecipients(): void {
+    const search = this.recipientSearch.toLowerCase().trim();
+    const selectedAccountId = this.selectedAccounts[0];
+    this.filteredRecipientAccounts = this.recipientAccounts.filter(item => {
+      if (item.account.id === selectedAccountId) {return false;}
+      if (!search) {return true;}
+      return (item.name.toLowerCase().includes(search) || item.account.accountName.toLowerCase().includes(search));
+    });
+  }
+
+  selectRecipient(item: { account: Account; name: string }): void {
+    this.newRecipientId = item.account.id;
+    this.recipientSearch = `${item.name} - ${item.account.accountName}`;
+    this.recipientDropdownOpen = false;
   }
 }
