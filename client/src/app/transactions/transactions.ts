@@ -390,18 +390,18 @@ export class Transactions {
   }
 
   buildRecipientList(): void {
-    const myAccountIds = new Set(this.accounts.map(account => account.id));
     this.recipientAccounts = this.allAccounts.map(account => ({account: account, name: this.userNames[account.userId] ?? 'Unknown User'}));
-    this.filteredRecipientAccounts = [...this.recipientAccounts];
+    this.filterRecipients();
   }
 
   filterRecipients(): void {
     const search = this.recipientSearch.toLowerCase().trim();
-    if (!search) {
-      this.filteredRecipientAccounts = [...this.recipientAccounts];
-      return;
-    }
-    this.filteredRecipientAccounts = this.recipientAccounts.filter(item => item.name.toLowerCase().includes(search) || item.account.accountName.toLowerCase().includes(search));
+    const selectedAccountId = this.selectedAccounts[0];
+    this.filteredRecipientAccounts = this.recipientAccounts.filter(item => {
+      if (item.account.id === selectedAccountId) {return false;}
+      if (!search) {return true;}
+      return (item.name.toLowerCase().includes(search) || item.account.accountName.toLowerCase().includes(search));
+    });
   }
 
   selectRecipient(item: { account: Account; name: string }): void {

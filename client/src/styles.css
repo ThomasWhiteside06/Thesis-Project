@@ -37,3 +37,12 @@ body {
   --tertiary: #56B4E9;
 }
 
+.dancershark {
+  --nav-bar: rgb(52, 144, 207);
+  --primary: white;
+  --border: white;
+  --text: black;
+  --secondary: gray;
+  --tertiary: black;
+}
+

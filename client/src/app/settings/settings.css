@@ -139,3 +139,19 @@ form button {
     margin-top: 10px;
     margin-bottom: 30px;
 }
+
+.dancershark-gif {
+    cursor: pointer;
+    width: 150px;
+    transition: transform 0.2s ease;
+}
+
+.dancershark-gif:hover {
+    transform: scale(1.05);
+}
+
+#dancershark {
+    position: absolute;
+    right: 130px;
+    top: 150px;
+}
