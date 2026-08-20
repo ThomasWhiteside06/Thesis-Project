@@ -1,10 +1,14 @@
 #page {
     margin-top: 0;
-    background-color: var(--primary);
+    background-color: var(--nav-bar);
     height: 814px;
     color: var(--text);
     padding-top: 20px;
     padding-left: 30px;
+}
+
+div {
+    background-color: var(--primary);
 }
 
 #settings-container {
@@ -15,6 +19,7 @@
     row-gap: 20px;
     min-height: 700px;
     align-items: start;
+    background-color: var(--nav-bar)
 }
 
 #title {
@@ -110,14 +115,27 @@ form button {
     flex-direction: column;
     align-items: flex-start;
     gap: 20px;
+    background-color: var(--nav-bar);
 }
 
 #temp-create-container {
     position: absolute;
     right: 30px;
     bottom: 30px;
+    background-color: var(--nav-bar);
 }
 
 #delete-user-button {
     width: 300px;
+    margin-bottom: 50px;
+    margin-left: 280px;
+}
+
+#left-container {
+    background-color: var(--nav-bar);
+}
+
+#currency-container {
+    margin-top: 10px;
+    margin-bottom: 30px;
 }

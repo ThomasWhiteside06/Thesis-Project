@@ -8,14 +8,16 @@
     padding-left: 40px;
 }
 
-#nav-bar-container h1,h2 {
-    -webkit-text-stroke: 1px var(--secondary);
-    color: var(--tertiary);
+#nav-bar-container h1, #nav-bar-container h2 {
+    -webkit-text-stroke: 0.25px var(--secondary);
+    color: var(--secondary);
     font-size: 3rem;
+    transition: 0.2s;
 }
 
-#nav-bar-container h1:hover, h2:hover {
-    color: var(--secondary);
+#nav-bar-container h1:hover, #nav-bar-container h2:hover {
+    transform: scale(1.02);
+    text-shadow: 0 0 10px var(--tertiary);
 }
 
 #link_container {

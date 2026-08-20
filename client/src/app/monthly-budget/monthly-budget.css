@@ -1,6 +1,6 @@
 #monthly-budget-container {
     padding: 20px;
-    background-color: var(--primary);
+    background-color: var(--nav-bar);
     color: var(--text);
     height: calc(100vh - 100px);
     box-sizing: border-box;
@@ -11,29 +11,6 @@
     text-align: center;
 }
 
-.month-selector {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 25px;
-}
-
-.month-selector button {
-    border: 1px solid var(--secondary);
-    background-color: var(--secondary);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 8px 15px;
-    cursor: pointer;
-    transition: 0.2s ease;
-}
-
-.month-selector button:hover {
-    background-color: var(--tertiary);
-    box-shadow: 0 0 10px var(--tertiary);
-    transform: scale(1.05);
-}
-
 #budget-content {
     display: grid;
     grid-template-columns: minmax(0, 45fr) minmax(0, 55fr);
@@ -42,6 +19,7 @@
     height: calc(100vh - 170px);
     min-height: 0;
     min-width: 0;
+    background-color: var(--nav-bar);
 }
 
 #budget-left {
@@ -51,6 +29,7 @@
     min-height: 0;
     min-width: 0;
     overflow: hidden;
+    background-color: var(--nav-bar);
 }
 
 #budget-chart {
@@ -60,12 +39,14 @@
     padding: 20px;
     box-sizing: border-box;
     min-width: 0;
+    background-color: var(--primary);
 }
 
 #budget-summary {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
+    background-color: var(--nav-bar);
 }
 
 #budget-summary > div {
@@ -73,6 +54,7 @@
     border-radius: 10px;
     padding: 15px;
     text-align: center;
+    background-color: var(--primary);
 }
 
 .income-summary strong {
@@ -95,6 +77,7 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
+    background-color: var(--primary);
 }
 
 #category-list h2 {
@@ -143,6 +126,7 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
+    background-color: var(--primary);
 }
 
 #transaction-scroll {
@@ -195,6 +179,7 @@
     justify-content: center;
     align-items: center;
     gap: 25px;
+    background-color: var(--nav-bar);
 }
 
 .budget-period-selector button {

@@ -1,0 +1,22 @@
+<div class="login-container">
+      <h1>Login</h1>
+      <form (submit)="onLogin($event)" class="form">
+        <label>Email</label>
+        <input
+          type="email"
+          [value]="email()"
+          (input)="onEmailInput($event)"
+          required
+        />
+        <label>Password</label>
+        <input
+          type="password"
+          [value]="password()"
+          (input)="onPasswordInput($event)"
+          required
+        />
+        <button type="submit" id = 'login-button' >Login</button>
+      </form>
+      @if (error()) {<p class="error">{{ error() }}</p>}
+      <button id="logout-button" (click)="onLogout()">Logout</button>
+    </div>

@@ -1,14 +1,19 @@
 #accounts-container {
     margin-top: 0;
-    background-color: var(--primary);
+    background-color: var(--nav-bar);
     height: calc(100vh - 100px);
     min-height: 814px;
     box-sizing: border-box;
     color: var(--text);
-    padding-top: 20px;
+    padding: 20px;
     display: grid;
-    grid-template-columns: 15% 25% 60%;
-    grid-template-rows: 1fr;
+    grid-template-columns: 12% 26% 60%;
+    grid-template-rows: minmax(0, 1fr);
+    gap: 20px;
+}
+
+div {
+    background-color: var(--primary);
 }
 
 .container-test {
@@ -20,6 +25,10 @@
     margin-left: 20px;
 }
 
+#accounts-title-div {
+  border-radius: 10px 10px 0 0;
+}
+
 #accounts-page-title {
     flex: 0 0 auto;
     margin: 0;
@@ -27,13 +36,15 @@
     font-size: 2.5rem;
     line-height: 1.1;
     text-align: center;
-    color: var(--tertiary);
-    -webkit-text-stroke: 1px var(--secondary);
-    border: 1px solid var(--border);
+    color: var(--secondary);
+    text-shadow: 0 0 3px var(--tertiary);
+    width: calc(100% - 10px);
+    translate: -30px;
 }
 
 #accounts-list {
     box-sizing: border-box;
+    border-radius: 10px;
 }
 
 #accounts-title {
@@ -68,6 +79,7 @@
     margin-top: 20px;
     position: relative;
     cursor: pointer;
+    flex-shrink: 0;
 }
 
 .incoming-transaction {
@@ -89,20 +101,26 @@
 #right-col {
     display: grid;
     grid-template-columns: 50% 50%;
-    grid-template-rows: 1fr;
+    grid-template-rows: minmax(0, 1fr);
+    border-radius: 10px;
+    min-height: 0;
 }
 
 #middle-col {
     padding-left: 30px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
 }
 
 .transaction-recipient {
     font-size: x-large;
+    background-color: var(--trans-background);
 }
 
 .transaction-amount {
     font-size: x-large;
     margin-left: auto;
+    background-color: var(--trans-background);
 }
 
 .incoming-transaction .transaction-amount {
@@ -117,12 +135,14 @@
    position: absolute;
     bottom: 10px;
     right: 10px;
+    background-color: var(--trans-background);
 }
 
 .transaction-categories {
     position: absolute;
     bottom: 10px;
     left: 10px;
+    background-color: var(--trans-background);
 }
 
 #account-transactions,
@@ -137,7 +157,7 @@
 
 #account-transactions-scroll,
 #reccuring-transactions-scroll {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
@@ -146,6 +166,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+#account-transactions {
+    border-radius: 10px 0 0 10px;
+}
+
+#reccuring-transactions {
+    border-radius: 0 10px 10px 0;
 }
 
 .transaction-content {
