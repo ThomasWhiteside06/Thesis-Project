@@ -44,5 +44,6 @@ body {
   --text: black;
   --secondary: gray;
   --tertiary: black;
+  --trans-background: gray;
 }
 
